@@ -8,7 +8,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+ZSH_THEME="fwalch"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -23,13 +23,14 @@ ZSH_THEME="robbyrussell"
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
 
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
+# Uncomment the following line to disable bi-weekly auto-update checks.
+# DISABLE_AUTO_UPDATE="true"
+
+# Uncomment the following line to automatically update without prompting.
+# DISABLE_UPDATE_PROMPT="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
+# export UPDATE_ZSH_DAYS=13
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
@@ -44,9 +45,6 @@ ZSH_THEME="robbyrussell"
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
@@ -70,9 +68,48 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git postgres npm python docker docker-compose)
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
 
 source $ZSH/oh-my-zsh.sh
+
+# alias for activating local python venv
+alias penv="source env/bin/activate && source .env"
+
+# alias for local stack aws-cli make-bucket
+awsmb(){
+    aws --endpoint-url=http://localhost:4566 --no-sign-request s3 mb s3://$1
+}
+
+alias awsl="aws --endpoint-url=http://localhost:4566 --no-sign-request"
+
+alias python="python3"
+
+# aliases for git
+alias gitr="git checkout release && git merge master && git push "
+alias commit="git cz -n cz_commitizen_emoji commit"
+alias changelog="git cz bump --changelog"
+
+restart-services(){
+    sudo service nginx restart
+    sudo service redis-server restart
+    sudo service postgresql restart
+    hostsfile="/mnt/c/Windows/System32/drivers/etc/hosts"
+    newip=$(ip addr show eth0 | grep 'inet\b' | awk '{print $2}' | cut -d/ -f1)
+    oldip=$(grep -m 1 '#WSLIP' $hostsfile | awk '{print $1}' | cut -d/ -f1)
+    newoutput=$(cat $hostsfile | sed "s~${oldip}~${newip}~")
+    echo $newoutput > $hostsfile
+}
+
+gcob(){
+    git checkout -b $1
+    git push --set-upstream origin $1
+}
 
 # User configuration
 
@@ -99,7 +136,28 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+export PATH="$PATH:/opt/mssql-tools/bin:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+getBranchName(){
+    echo $(git rev-parse --abbrev-ref HEAD)
+}
+
+
+gitpu(){
+    git push --set-upstream origin $(getBranchName)
+}
+
+gbdr(){
+    gbd $1
+    git push -d origin $1
+}
+
+gwtb(){
+    git worktree add -f --track -b $1 $2
+}
+
+
+alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \
+  -v $HOME/.docker/containers/s3:/tmp/localstack"
+export PATH="$HOME/.poetry/bin:$PATH"
