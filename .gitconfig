@@ -1,0 +1,9 @@
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[user]
+	name = Omar Ali AbdelSalam
+	email = excalibur1987@gmail.com
+	username = excalibur1987
+[init]
+	defaultBranch = master
