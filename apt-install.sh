@@ -17,4 +17,6 @@ done < apt-packages.txt
 
 eval $cmd
 
+sudo apt autoremove
+
 echo "---------------$packages packages installed------------"
