@@ -10,5 +10,3 @@ nvm install --lts
 sudo curl http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc -o ~/ACCC4CF8.asc
 sudo apt-key add ~/ACCC4CF8.asc
 sudo rm ~/ACCC4CF8.asc
-
-source ./apt-install.sh
