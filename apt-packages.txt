@@ -34,3 +34,4 @@ shared-mime-info
 sshpass
 unixodbc-dev
 zlib1g-dev
+mssql-server
