@@ -10,7 +10,7 @@ while IFS= read -r line; do
         cmd="$cmd -y&&sudo apt update && sudo apt upgrade -y && sudo apt install"
         iter=$((iter*0))
     fi
-    cmd=$cmd" "$line
+    cmd=$cmd" "$line" -y"
     iter=$((iter+1))
     packages=$((packages+1))
 done < apt-packages.txt
