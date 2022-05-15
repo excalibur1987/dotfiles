@@ -1,7 +1,7 @@
 sudo rm ~/.gitignore&& sudo ln ./.gitignore ~/.gitignore
 sudo rm ~/.gitconfig&& sudo ln ./.gitconfig ~/.gitconfig
 sudo rm ~/.bashrc&& sudo ln ./.bashrc ~/.bashrc
-sudo rm ~/.zshr&& sudo ln ./.zshr ~/.zshr
+sudo rm ~/.zshrc&& sudo ln ./.zshrc ~/.zshrc
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
