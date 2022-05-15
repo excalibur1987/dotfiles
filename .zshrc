@@ -161,3 +161,8 @@ gwtb(){
 alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \
   -v $HOME/.docker/containers/s3:/tmp/localstack"
 export PATH="$HOME/.poetry/bin:$PATH"
+
+export PNPM_HOME="/home/omar/.local/share/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+
+alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
