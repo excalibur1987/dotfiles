@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ./symlinks.sh
+
 source ./pre-install.sh
 
 iter=0
