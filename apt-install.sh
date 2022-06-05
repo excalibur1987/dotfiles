@@ -21,4 +21,6 @@ eval $cmd
 
 sudo apt autoremove -y
 
+npm i commitizen -g
+
 echo "---------------$packages packages installed------------"
