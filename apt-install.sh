@@ -4,6 +4,8 @@ source ./symlinks.sh
 
 source ./pre-install.sh
 
+source ./custom-scripts/gh-cli.sh
+
 iter=0
 cmd="sudo apt update && sudo apt upgrade -y && sudo apt install "
 packages=0

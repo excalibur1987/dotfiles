@@ -1,5 +1,4 @@
 zsh
-gh
 apt-transport-https
 awscli
 build-essential
