@@ -99,11 +99,6 @@ restart-services(){
     sudo service nginx restart
     sudo service redis-server restart
     sudo service postgresql restart
-    hostsfile="/mnt/c/Windows/System32/drivers/etc/hosts"
-    newip=$(ip addr show eth0 | grep 'inet\b' | awk '{print $2}' | cut -d/ -f1)
-    oldip=$(grep -m 1 '#WSLIP' $hostsfile | awk '{print $1}' | cut -d/ -f1)
-    newoutput=$(cat $hostsfile | sed "s~${oldip}~${newip}~")
-    echo $newoutput > $hostsfile
 }
 
 gcob(){
@@ -160,9 +155,12 @@ gwtb(){
 
 alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \
   -v $HOME/.docker/containers/s3:/tmp/localstack"
-export PATH="$HOME/.poetry/bin:$PATH"
 
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
 alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
+# pnpm
+export PNPM_HOME="/home/omar/.local/share/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end
