@@ -1,22 +1,12 @@
 #!/bin/bash
 
-source ./symlinks.sh
-
-source ./pre-install.sh
-
-search_dir=./custom-scripts
-for entry in "$search_dir"/*
-do
-  eval "source $entry"
-done
-
-
+echo "---------------installing packages-----------"
 iter=0
-cmd="sudo apt update && sudo apt upgrade -y && sudo apt install "
+cmd="sudo apt update || true && sudo apt upgrade -y || true && sudo apt install "
 packages=0
 while IFS= read -r line; do
     if [[ "$iter" -eq 5 ]]; then
-        cmd="$cmd -y&&sudo apt update && sudo apt upgrade -y && sudo apt install"
+        cmd="$cmd -y|| true &&sudo apt update || true && sudo apt upgrade -y || true && sudo apt install"
         iter=$((iter*0))
     fi
     cmd=$cmd" "$line" -y"
@@ -26,8 +16,5 @@ done < apt-packages.txt
 
 eval $cmd
 
-sudo apt autoremove -y
-
-npm i commitizen -g
-
+echo "-------------------------------------------------------"
 echo "---------------$packages packages installed------------"
