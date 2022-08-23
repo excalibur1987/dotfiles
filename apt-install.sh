@@ -4,7 +4,12 @@ source ./symlinks.sh
 
 source ./pre-install.sh
 
-source ./custom-scripts/gh-cli.sh
+search_dir=./custom-scripts
+for entry in "$search_dir"/*
+do
+  eval "source $entry"
+done
+
 
 iter=0
 cmd="sudo apt update && sudo apt upgrade -y && sudo apt install "
