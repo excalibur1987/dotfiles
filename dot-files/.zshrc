@@ -131,7 +131,7 @@ gcob(){
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-export PATH="$PATH:/opt/mssql-tools/bin:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
+export PATH="$PATH:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
 
 
 getBranchName(){
@@ -164,3 +164,4 @@ alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
+export PATH="$PATH:/opt/mssql-tools18/bin"

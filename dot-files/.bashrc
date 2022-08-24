@@ -119,7 +119,7 @@ fi
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-export PATH="$PATH:/opt/mssql-tools/bin"
+export PATH="$PATH:/opt/mssql-tools18/bin"
 export PATH="$HOME/.poetry/bin:$PATH"
 
 export PNPM_HOME="/home/omar/.local/share/pnpm"
@@ -153,4 +153,5 @@ alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
 # pnpm
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
-# pnpm end
+# pnpm endexport PATH="$PATH:/opt/mssql-tools18/bin"
+export PATH="$PATH:/opt/mssql-tools18/bin"
