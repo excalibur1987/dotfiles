@@ -166,3 +166,4 @@ export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
 alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
+alias runapp="cd /home/omar/projects/updateServer&&source /home/omar/.cache/pypoetry/virtualenvs/updateserver-zLyjSblX-py3.8/bin/activate&&source .env&&python main.py"
