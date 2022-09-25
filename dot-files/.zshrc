@@ -99,11 +99,6 @@ restart-services(){
     sudo service nginx restart
     sudo service redis-server restart
     sudo service postgresql restart
-    hostsfile="/mnt/c/Windows/System32/drivers/etc/hosts"
-    newip=$(ip addr show eth0 | grep 'inet\b' | awk '{print $2}' | cut -d/ -f1)
-    oldip=$(grep -m 1 '#WSLIP' $hostsfile | awk '{print $1}' | cut -d/ -f1)
-    newoutput=$(cat $hostsfile | sed "s~${oldip}~${newip}~")
-    echo $newoutput > $hostsfile
 }
 
 gcob(){
@@ -136,7 +131,7 @@ gcob(){
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-export PATH="$PATH:/opt/mssql-tools/bin:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
+export PATH="$PATH:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
 
 
 getBranchName(){
@@ -160,10 +155,11 @@ gwtb(){
 
 alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \
   -v $HOME/.docker/containers/s3:/tmp/localstack"
-export PATH="$HOME/.poetry/bin:$PATH"
-
+# pnpm
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
-
+# pnpm end
 alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
 alias runapp="cd /home/omar/projects/updateServer&&source /home/omar/.cache/pypoetry/virtualenvs/updateserver-zLyjSblX-py3.8/bin/activate&&source .env&&python main.py"
+
+export PATH="$PATH:/opt/mssql-tools18/bin"

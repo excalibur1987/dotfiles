@@ -1,5 +1,4 @@
 zsh
-gh
 apt-transport-https
 awscli
 build-essential
@@ -12,10 +11,9 @@ libgdk-pixbuf2.0-0
 libpango-1.0-0
 libpangocairo-1.0-0
 libspatialindex-dev
-msodbcsql17
-mssql-tools
 nginx
 openjdk-8-jdk
+postgresql
 postgis
 postgresql-14-postgis
 python3
@@ -34,4 +32,4 @@ shared-mime-info
 sshpass
 unixodbc-dev
 zlib1g-dev
-mssql-server
+npm
