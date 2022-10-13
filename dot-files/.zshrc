@@ -155,13 +155,11 @@ gwtb(){
 
 alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \
   -v $HOME/.docker/containers/s3:/tmp/localstack"
-
-export PNPM_HOME="/home/omar/.local/share/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-
-alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
 # pnpm
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
+alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
+alias runapp="cd /home/omar/projects/updateServer&&source /home/omar/.cache/pypoetry/virtualenvs/updateserver-zLyjSblX-py3.8/bin/activate&&source .env&&python main.py"
+
 export PATH="$PATH:/opt/mssql-tools17/bin"
