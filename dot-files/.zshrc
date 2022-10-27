@@ -163,3 +163,6 @@ alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
 alias runapp="cd /home/omar/projects/updateServer&&source /home/omar/.cache/pypoetry/virtualenvs/updateserver-zLyjSblX-py3.8/bin/activate&&source .env&&python main.py"
 
 export PATH="$PATH:/opt/mssql-tools17/bin"
+
+# add bin scripts to path
+export PATH="$PATH:/home/omar/dotfiles/bin"

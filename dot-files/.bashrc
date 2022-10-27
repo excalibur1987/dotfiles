@@ -155,3 +155,6 @@ export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm endexport PATH="$PATH:/opt/mssql-tools18/bin"
 export PATH="$PATH:/opt/mssql-tools18/bin"
+
+# add bin scripts to path
+export PATH="$PATH:/home/omar/dotfiles/bin"
