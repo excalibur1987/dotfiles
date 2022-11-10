@@ -71,73 +71,81 @@
 0 22 * * fri /home/omar/servupdate.sh wh-stock 30 0
 
 # branch return retails
-25 08,12,14,16 * * * /home/omar/servupdate.sh brn-ret 2 0
+25 12,14,16 * * * /home/omar/servupdate.sh brn-ret 2 0
 25 18,20,22,02 * * * /home/omar/servupdate.sh brn-ret 2 0
 25 04,06 * * * /home/omar/servupdate.sh brn-ret 2 0
 0 0 05 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh brn-ret 7 0
 0 0 13 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh brn-ret 2 0
 0 06 * * fri /home/omar/servupdate.sh brn-ret 7 0
 0 22 * * fri /home/omar/servupdate.sh brn-ret 30 0
+0 08 * * * /home/omar/servupdate.sh brn-ret 30 0
 
 # branch return warehouse
-25 08,12,14,16 * * * /home/omar/servupdate.sh brn-wh 2 0
+25 12,14,16 * * * /home/omar/servupdate.sh brn-wh 2 0
 25 18 * * * /home/omar/servupdate.sh brn-wh 2 0
 0 0 05 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh brn-wh 7 0
 0 0 13 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh brn-wh 2 0
 0 06 * * fri /home/omar/servupdate.sh brn-wh 7 0
 0 22 * * fri /home/omar/servupdate.sh brn-wh 30 0
+0 08 * * * /home/omar/servupdate.sh brn-wh 30 0
 
 # btv
-25 08,12,14,16 * * * /home/omar/servupdate.sh btv 2 0
+25 12,14,16 * * * /home/omar/servupdate.sh btv 2 0
 25 18 * * * /home/omar/servupdate.sh btv 2 0
 0 0 05 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh btv 7 0
 0 0 13 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh btv 2 0
 0 06 * * fri /home/omar/servupdate.sh btv 7 0
 0 22 * * fri /home/omar/servupdate.sh btv 30 0
+0 08 * * * /home/omar/servupdate.sh btv 30 0
 
 # itv
-25 08,12,14,16 * * * /home/omar/servupdate.sh itv 2 0
+25 12,14,16 * * * /home/omar/servupdate.sh itv 2 0
 25 18,20,22,02 * * * /home/omar/servupdate.sh itv 2 0
 25 04,06 * * * /home/omar/servupdate.sh itv 2 0
 0 0 05 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh itv 7 0
 0 0 13 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh itv 2 0
 0 06 * * fri /home/omar/servupdate.sh itv 7 0
 0 22 * * fri /home/omar/servupdate.sh itv 30 0
+0 08 * * * /home/omar/servupdate.sh itv 30 0
 
 # outd
-25 08,12,14,16 * * * /home/omar/servupdate.sh outd 2 0
+25 12,14,16 * * * /home/omar/servupdate.sh outd 2 0
 25 18,20,22,02 * * * /home/omar/servupdate.sh outd 2 0
 25 04,06 * * * /home/omar/servupdate.sh outd 2 0
 0 0 05 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh outd 7 0
 0 0 13 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh outd 2 0
 0 06 * * fri /home/omar/servupdate.sh outd 7 0
 0 22 * * fri /home/omar/servupdate.sh outd 30 0
+0 08 * * * /home/omar/servupdate.sh outd 30 0
 
 # purchase order
-25 08,12,14,16 * * * /home/omar/servupdate.sh pord 2 0
+25 12,14,16 * * * /home/omar/servupdate.sh pord 2 0
 25 18 * * * /home/omar/servupdate.sh pord 2 0
 0 0 05 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh pord 7 0
 0 0 13 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh pord 2 0
 0 06 * * fri /home/omar/servupdate.sh pord 7 0
 0 22 * * fri /home/omar/servupdate.sh pord 30 0
+0 08 * * * /home/omar/servupdate.sh pord 30 0
 
 # store requests
-25 08,12,14,16 * * * /home/omar/servupdate.sh preq 2 0
+25 12,14,16 * * * /home/omar/servupdate.sh preq 2 0
 25 18,20,22,02 * * * /home/omar/servupdate.sh preq 2 0
 25 04,06 * * * /home/omar/servupdate.sh preq 2 0
 0 0 05 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh preq 7 0
 0 0 13 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh preq 2 0
 0 06 * * fri /home/omar/servupdate.sh preq 7 0
 0 22 * * fri /home/omar/servupdate.sh preq 30 0
+0 08 * * * /home/omar/servupdate.sh preq 30 0
 
 # purchase return
-25 08,12,14,16 * * * /home/omar/servupdate.sh pret 2 0
+25 12,14,16 * * * /home/omar/servupdate.sh pret 2 0
 25 18,20,22,02 * * * /home/omar/servupdate.sh pret 2 0
 25 04,06 * * * /home/omar/servupdate.sh pret 2 0
 0 0 05 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh pret 7 0
 0 0 13 * * sat,sun,mon,tue,wed,thu /home/omar/servupdate.sh pret 2 0
 0 06 * * fri /home/omar/servupdate.sh pret 7 0
 0 22 * * fri /home/omar/servupdate.sh pret 30 0
+0 08 * * * /home/omar/servupdate.sh pret 30 0
 
 # sales tables
 25 08,12,14,16 * * * /home/omar/servupdate.sh sales 2 0
