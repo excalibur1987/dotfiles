@@ -65,12 +65,12 @@ git worktree prune
 
 
 
-if [[ $remove -eq 1 ]] then
+if [[ $remove -eq 1 ]]; then
   echo "${GREEN}Removing branch"
   git branch -D $1
 fi
 
-if [[ $remove_remote -eq 1 ]] then
+if [[ $remove_remote -eq 1 ]]; then
   echo "${GREEN}Removing local & remote branchs"
   git push -d origin $1
 fi
