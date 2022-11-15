@@ -95,17 +95,6 @@ alias gitr="git checkout release && git merge master && git push "
 alias commit="git cz -n cz_commitizen_emoji commit"
 alias changelog="git cz bump --changelog"
 
-restart-services(){
-    sudo service nginx restart
-    sudo service redis-server restart
-    sudo service postgresql restart
-}
-
-gcob(){
-    git checkout -b $1
-    git push --set-upstream origin $1
-}
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -132,25 +121,6 @@ gcob(){
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 export PATH="$PATH:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
-
-
-getBranchName(){
-    echo $(git rev-parse --abbrev-ref HEAD)
-}
-
-
-gitpu(){
-    git push --set-upstream origin $(getBranchName)
-}
-
-gbdr(){
-    gbd $1
-    git push -d origin $1
-}
-
-gwtb(){
-    git worktree add -f --track -b $1 $2
-}
 
 
 alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \

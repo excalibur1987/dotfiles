@@ -126,26 +126,6 @@ export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
 
-
-getBranchName(){
-    echo $(git rev-parse --abbrev-ref HEAD)
-}
-
-
-gitpu(){
-    git push --set-upstream origin $(getBranchName)
-}
-
-gbdr(){
-    gbd $1
-    git push -d origin $1
-}
-
-gwtb(){
-    git worktree add -f --track -b $1 $2
-}
-
-
 alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \
   -v $HOME/.docker/containers/s3:/tmp/localstack"
 alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
