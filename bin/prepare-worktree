@@ -19,9 +19,14 @@ parse_params() {
   branch=''
   python_env=0
   js_env=0
+  env_path=''
 
   while :; do
     case "${1-}" in
+    -v | --env-path)
+      env_path="$2"
+      shift
+      ;;
     -b | --branch)
       branch="$2"
       shift
@@ -51,7 +56,10 @@ parse_params() {
 }
 parse_params "$@"
 
-eval "cp ~/projects/env-vars/${basedir}_.env ${branch}/.env"
+if [[ -n "$env_path"  ]]; then
+  eval "cp ${env_path}/${basedir}_.env ${branch}/.env"
+fi
+
 cd $branch
 
 if [[ $js_env -eq 1 ]]; then

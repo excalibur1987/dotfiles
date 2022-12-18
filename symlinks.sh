@@ -1,10 +1,10 @@
 echo "---------------Adding symlinks------------"
 
-sudo rm ~/.gitignore
-sudo rm ~/.gitconfig
-sudo rm ~/.bashrc
-sudo rm ~/.zshrc
-sudo rm ~/.czrc
+sudo rm ~/.gitignore || true
+sudo rm ~/.gitconfig || true
+sudo rm ~/.bashrc || true
+sudo rm ~/.zshrc || true
+sudo rm ~/.czrc || true
 sudo ln ./dot-files/.gitignore ~/.gitignore
 sudo ln ./dot-files/.gitconfig ~/.gitconfig
 sudo ln ./dot-files/.bashrc ~/.bashrc
