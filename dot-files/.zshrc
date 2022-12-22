@@ -135,4 +135,7 @@ alias runapp="cd /home/omar/projects/updateServer&&source /home/omar/.cache/pypo
 export PATH="$PATH:/opt/mssql-tools17/bin"
 
 # add bin scripts to path
-export PATH="$PATH:/home/omar/dotfiles/bin"
+export LD_LIBRARY_PATH="/usr/local/lib"
+export PATH="$PATH:/home/omar/dotfiles/bin:$LD_LIBRARY_PATH"
+
+MSSQLTOOLSSERVICE_PATH=/home/omar/Documents/Microsoft.SqlTools.ServiceLayer-rhel-x64-net6.0/
