@@ -2,6 +2,24 @@
 
 basedir=$(echo ${PWD##*/})
 
+usage() {
+  cat <<EOF
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-v] [-e] [-p] [-j] <worktree>
+
+Script the creation of a new worktree.
+
+Available options:
+
+-h, --help                    Print this help and exit
+-v, --env-path                Path for template of .env path
+-p, --python                  Configure python environment using poetry
+-j, --js                      Configure node environment using pnpm
+
+EOF
+  exit
+}
+
+
 msg() {
   echo >&2 -e "${1-}"
 }
@@ -23,22 +41,18 @@ parse_params() {
 
   while :; do
     case "${1-}" in
+    -h | --help) usage ;;
     -v | --env-path)
       env_path="$2"
       shift
       ;;
-    -b | --branch)
-      branch="$2"
+    -j | --js)
+      js_env=1
       shift
       ;;
-    -e | --env)
-      if [[ "${2-}" != "js" ]]; then
-          js_env=1
-      fi
-      if [[ "${2-}" != "python" ]]; then
-          python_env=1
-      fi
-          shift
+    -p | --python)
+      python_env=1
+      shift
       ;;
     -?*) die "Unknown option: $1" ;;
     *) break ;;
@@ -57,7 +71,7 @@ parse_params() {
 parse_params "$@"
 
 if [[ -n "$env_path"  ]]; then
-  eval "cp ${env_path}/${basedir}_.env ${branch}/.env"
+  eval "cp ${env_path} ${branch}/.env"
 fi
 
 cd $branch
@@ -68,5 +82,5 @@ fi
 
 if [[ $python_env -eq 1 ]]; then
     eval "poetry install"
-    echo "source $(pwd)/.env\n" >> $(echo $(poetry env info -p)"/bin/activate")
+    echo "source $(pwd)/.env" >> $(echo $(poetry env info -p)"/bin/activate")
 fi
