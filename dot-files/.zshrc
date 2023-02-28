@@ -78,22 +78,8 @@ export NVM_DIR="$HOME/.nvm"
 
 source $ZSH/oh-my-zsh.sh
 
-# alias for activating local python venv
-alias penv="source env/bin/activate && source .env"
-
-# alias for local stack aws-cli make-bucket
-awsmb(){
-    aws --endpoint-url=http://localhost:4566 --no-sign-request s3 mb s3://$1
-}
-
-alias awsl="aws --endpoint-url=http://localhost:4566 --no-sign-request"
 
 alias python="python3"
-
-# aliases for git
-alias gitr="git checkout release && git merge master && git push "
-alias commit="git cz -n cz_commitizen_emoji commit"
-alias changelog="git cz bump --changelog"
 
 # User configuration
 
@@ -123,14 +109,10 @@ alias changelog="git cz bump --changelog"
 export PATH="$PATH:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
 
 
-alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \
-  -v $HOME/.docker/containers/s3:/tmp/localstack"
 # pnpm
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
-alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
-alias runapp="cd /home/omar/projects/updateServer&&source /home/omar/.cache/pypoetry/virtualenvs/updateserver-zLyjSblX-py3.8/bin/activate&&source .env&&python main.py"
 
 export PATH="$PATH:/opt/mssql-tools17/bin"
 
