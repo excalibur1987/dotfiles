@@ -81,6 +81,8 @@ source $ZSH/oh-my-zsh.sh
 
 alias python="python3"
 
+alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -121,3 +123,6 @@ export LD_LIBRARY_PATH="/usr/local/lib"
 export PATH="$PATH:/home/omar/dotfiles/bin:$LD_LIBRARY_PATH"
 
 MSSQLTOOLSSERVICE_PATH=/home/omar/Documents/Microsoft.SqlTools.ServiceLayer-rhel-x64-net6.0/
+
+# add snap bin to path
+export PATH="$PATH:/snap/bin"

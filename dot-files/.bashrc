@@ -139,3 +139,6 @@ export PATH="$PATH:/opt/mssql-tools17/bin"
 # add bin scripts to path
 export PATH="$PATH:/home/omar/dotfiles/bin"
 export LD_LIBRARY_PATH=/usr/local/lib
+
+# add snap bin to path
+export PATH="$PATH:/snap/bin"
