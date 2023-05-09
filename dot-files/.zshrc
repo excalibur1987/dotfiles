@@ -116,7 +116,7 @@ export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 
-export PATH="$PATH:/opt/mssql-tools17/bin"
+export PATH="$PATH:/opt/mssql-tools/bin"
 
 # add bin scripts to path
 export LD_LIBRARY_PATH="/usr/local/lib"

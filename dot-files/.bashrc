@@ -134,7 +134,7 @@ alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
-export PATH="$PATH:/opt/mssql-tools17/bin"
+export PATH="$PATH:/opt/mssql-tools/bin"
 
 # add bin scripts to path
 export PATH="$PATH:/home/omar/dotfiles/bin"
