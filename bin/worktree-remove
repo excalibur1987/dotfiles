@@ -28,15 +28,10 @@ parse_params() {
   create_upstream=1
   # prefix="$(git config github.user)/"
   branch=''
-  remove=0
   remove_remote=0
 
   while :; do
     case "${1-}" in
-    -r | --remove)
-      remove=1
-      shift
-      ;;
     -rr | --remove-remote)
       remove_remote=1
       shift
@@ -56,21 +51,60 @@ parse_params() {
   return 0
 }
 
+run_command() {
+  local message=$1
+  shift
+  echo >&2 -ne "$message "
+
+  ("$@") &
+  show_spinner "$!"
+  # shellcheck disable=SC2181
+  if [ $? -eq 0 ]; then
+    echo >&2 -e " ${GREEN}Done.${NOFORMAT}"
+  else
+    echo >&2 -e " ${RED}FAILED.${NOFORMAT}"
+    exit 1
+  fi
+}
+function shutdown() {
+  tput cnorm # reset cursor
+}
+trap shutdown EXIT
+
+function cursorBack() {
+  echo -en "\033[$1D"
+}
+
+function show_spinner() {
+  # make sure we use non-unicode character type locale 
+  # (that way it works for any locale as long as the font supports the characters)
+  local LC_CTYPE=C
+
+  local pid=$1 # Process Id of the previous running command
+
+  local spin='⣾⣽⣻⢿⡿⣟⣯⣷'
+  local charwidth=3
+
+  local i=0
+  tput civis # cursor invisible
+  while kill -0 $pid 2>/dev/null; do
+    local i=$(((i + $charwidth) % ${#spin}))
+    printf "%s" "${spin:$i:$charwidth}"
+
+    cursorBack 1
+    sleep .1
+  done
+  tput cnorm
+  wait $pid # capture exit code
+  return $?
+}
+
 
 branch=$1
 
-echo "${GREEN}Cleaning worktree"
-eval "git worktree remove ${1}"
+run_command "${GREEN}Cleaning worktree" git worktree remove ${1}
 git worktree prune
 
+run_command "${GREEN}Removing branch" git branch -D $1
 
-
-if [[ $remove -eq 1 ]]; then
-  echo "${GREEN}Removing branch"
-  git branch -D $1
-fi
-
-if [[ $remove_remote -eq 1 ]]; then
-  echo "${GREEN}Removing local & remote branchs"
-  git push -d origin $1
-fi
+run_command "${GREEN}Removing remote branch" git push -d origin $1
