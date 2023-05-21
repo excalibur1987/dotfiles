@@ -126,3 +126,6 @@ MSSQLTOOLSSERVICE_PATH=/home/omar/Documents/Microsoft.SqlTools.ServiceLayer-rhel
 
 # add snap bin to path
 export PATH="$PATH:/snap/bin"
+
+export BROWSER="/mnt/c/browser.exe"
+export CHANGELOG_GITHUB_TOKEN="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"

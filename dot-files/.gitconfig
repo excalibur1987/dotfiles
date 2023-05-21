@@ -7,3 +7,10 @@
 	username = excalibur1987
 [init]
 	defaultBranch = master
+[alias]
+    stash-unstaged = "!cd "${GIT_PREFIX:-.}"; f() { \
+        git stash --quiet --staged;                 \
+        git stash -u \"$@\";                        \
+        git stash pop --quiet \"stash@{1}\";        \
+        git add -A;                                 \
+    }; f"
