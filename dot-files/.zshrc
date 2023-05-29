@@ -129,3 +129,4 @@ export PATH="$PATH:/snap/bin"
 
 export BROWSER="/mnt/c/browser.exe"
 export CHANGELOG_GITHUB_TOKEN="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"
+alias pnpx="pnpm dlx"

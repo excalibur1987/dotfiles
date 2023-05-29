@@ -27,26 +27,29 @@ parse_params() {
   # default values of variables set from params
   create_upstream=1
   # prefix="$(git config github.user)/"
-  branch=''
+  args=("$@")
+
+  [[ ${#args[@]} -eq 0 ]] && die "Missing script arguments"
+
+  branch="${args[0]}"
+  shift
+  
   remove_remote=0
+  force=0
 
   while :; do
     case "${1-}" in
     -rr | --remove-remote)
       remove_remote=1
-      shift
+      ;;
+    -f | --force)
+      force=1
       ;;
     -?*) die "Unknown option: $1" ;;
     *) break ;;
     esac
     shift
   done
-  [[ ${#args[@]} -eq 0 ]] && die "Missing script arguments"
-
-  # if a branch was not specified, generate one based on the prefix and folder name
-  if [[ -z "$branch" ]]; then
-    branch="${args[0]}"
-  fi
 
   return 0
 }
@@ -99,12 +102,17 @@ function show_spinner() {
   return $?
 }
 
+parse_params "$@"
 
-branch=$1
-
-run_command "${GREEN}Cleaning worktree" git worktree remove ${1}
+if [ $force -eq 1 ]; then
+  run_command "${GREEN}Cleaning worktree" git worktree remove ${1} --force
+else
+  run_command "${GREEN}Cleaning worktree" git worktree remove ${1}
+fi
 git worktree prune
 
 run_command "${GREEN}Removing branch" git branch -D $1
 
-run_command "${GREEN}Removing remote branch" git push -d origin $1
+if [ $remove_remote -eq 1 ]; then
+  run_command "${GREEN}Removing remote branch" git push -d origin $1
+fi
