@@ -1,0 +1,1 @@
+sudo cp ~/dotfiles/dot-files/hosts /etc/hosts -f

@@ -3,7 +3,8 @@
 # generateHosts = false
 127.0.0.1	localhost
 127.0.1.1	ZRKSALT-OMAR.Zahrat.local	ZRKSALT-OMAR
-﻿
+
+
 172.25.119.238	WSL-IP
 10.33.1.53	WMS-SQLSRV
 10.33.1.53	KSAZRH-RETAIL

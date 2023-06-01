@@ -12,5 +12,4 @@ else
     sudo ACCEPT_EULA=Y apt-get install -y mssql-tools
 fi
 sudo apt-get update
-sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17
 sudo apt-get install -y unixodbc-dev

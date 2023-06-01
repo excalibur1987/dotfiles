@@ -15,8 +15,8 @@ nginx
 openjdk-8-jdk
 postgresql
 postgis
-postgresql-14-postgis
 python3.10
+python3.10-dev
 python3.10-cffi
 python3.10-pip
 python3.10-venv
@@ -32,4 +32,5 @@ shared-mime-info
 sshpass
 unixodbc-dev
 zlib1g-dev
-npm
+python3-cffi
+libpq-dev
