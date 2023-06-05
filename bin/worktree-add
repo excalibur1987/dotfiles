@@ -204,8 +204,9 @@ eval "cd $initial_wd/$wk"
 git commit --allow-empty -m "Allow PR creation"
 git push origin $wk
 
-run_command "Opening GitHub to create PR"
+if [[ $create_upstream -eq 1 ]]; then
+  run_command "Opening GitHub to create PR"
 
-gh pr create --web
-
+  gh pr create --web
+fi
 msg "${GREEN}Success.${NOFORMAT}"
