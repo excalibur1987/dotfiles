@@ -201,7 +201,7 @@ update_remote "$branch"
 
 eval "cd $initial_wd/$wk"
 
-git commit --allow-empty -m "Allow PR creation"
+git commit --allow-empty -m "$branch"
 git push origin $wk
 
 if [[ $create_upstream -eq 1 ]]; then
