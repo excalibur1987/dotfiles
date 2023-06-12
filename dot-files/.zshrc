@@ -78,11 +78,6 @@ export NVM_DIR="$HOME/.nvm"
 
 source $ZSH/oh-my-zsh.sh
 
-
-alias python="python3"
-
-alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -110,7 +105,6 @@ alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 export PATH="$PATH:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
 
-
 # pnpm
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
@@ -129,4 +123,12 @@ export PATH="$PATH:/snap/bin"
 
 export BROWSER="/mnt/c/browser.exe"
 export CHANGELOG_GITHUB_TOKEN="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"
-alias pnpx="pnpm dlx"
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi

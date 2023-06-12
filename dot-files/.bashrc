@@ -72,39 +72,6 @@ xterm*|rxvt*)
     ;;
 esac
 
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
-# colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -125,11 +92,6 @@ export PATH="$HOME/.poetry/bin:$PATH"
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
-
-alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \
-  -v $HOME/.docker/containers/s3:/tmp/localstack"
-alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
-
 # pnpm
 export PNPM_HOME="/home/omar/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
@@ -145,4 +107,12 @@ export PATH="$PATH:/snap/bin"
 
 export BROWSER="/mnt/c/browser.exe"
 export CHANGELOG_GITHUB_TOKEN="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"
-alias pnpx="pnpm dlx"
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi

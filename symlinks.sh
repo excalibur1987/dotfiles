@@ -1,14 +1,17 @@
+#!/bin/bash
 echo "---------------Adding symlinks------------"
 
-sudo rm ~/.gitignore || true
-sudo rm ~/.gitconfig || true
-sudo rm ~/.bashrc || true
-sudo rm ~/.zshrc || true
-sudo rm ~/.czrc || true
-sudo ln $(pwd)/dot-files/.gitignore ~/.gitignore
-sudo ln $(pwd)/dot-files/.gitconfig ~/.gitconfig
-sudo ln $(pwd)/dot-files/.bashrc ~/.bashrc
-sudo ln $(pwd)/dot-files/.zshrc ~/.zshrc
-sudo ln $(pwd)/dot-files/.czrc ~/.czrc
+search_dir=$(pwd)/dot-files
+for entry in "$search_dir"/\.*
+do
+    if [[ "$entry" =~ \.*  ]]; then
+        filename=$(basename $entry)
+        sudo rm ~/$filename >> /dev/null
+        sudo ln $entry ~/$filename
+    fi
+done
+
+sudo cp $(pwd)/dot-files/hosts /etc/hosts
 
 echo "---------------Symlinks Added------------"
+
