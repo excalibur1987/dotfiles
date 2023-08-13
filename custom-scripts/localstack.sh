@@ -9,7 +9,7 @@ template="
 Description=Start Localstack container
 
 [Service]
-ExecStart=/usr/bin/docker-compose up -d -f "$(pwd)"/localstack/docker-compose.yml&&awsmb
+ExecStart=/usr/bin/docker-compose -f "$(pwd)"/localstack/docker-compose.yml up --force-recreate -d&&/usr/bin/aws --endpoint-url=http://localhost:4566 --no-sign-request s3 mb s3://psc
 
 [Install]
 WantedBy=multi-user.target
