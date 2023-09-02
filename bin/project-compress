@@ -1,0 +1,148 @@
+#!/bin/bash
+
+# Function to display help message
+display_help() {
+    echo "Usage: $0 [options]"
+    echo "Compress a directory into a collapsed file structure."
+    echo
+    echo "Options:"
+    echo "  -h, --help                 Show this help message."
+    echo "  -s, --source-directory <dir>  Specify the source directory to compress."
+    echo "  -o, --output-file <file>  Specify the output file for the compressed content."
+    echo "  -e, --exclude <path>      Exclude files with the specified path prefix (can be used multiple times)."
+    echo "  -g, --git                 Process only Git-tracked files."
+    echo "  -sep, --file-separator <sep>    Specify the file separator (default is '###')."
+    echo "  -desc, --file-descriptor <desc>  Specify the file descriptor (default is 'FILE:')."
+    echo "  -ml, --max-lines <lines>  Start a new output file when the specified number of lines is exceeded."
+    exit 0
+}
+
+output_files_count=0
+
+# Function to create a new output file
+create_new_output_file() {
+    output_file_count=$((output_file_count + 1))
+    output_files_count=$((output_files_count + 1))
+    output_file="$output_base_name$output_file_count.txt"
+    > "$output_file"
+    echo "Created new output file: $output_file"
+}
+
+# Parse command-line arguments
+declare -a exclude_paths
+git_flag=false
+file_separator="###"
+file_descriptor="FILE:"
+max_lines=0
+output_base_name="output"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
+            display_help
+            ;;
+        -s|--source-directory)
+            source_dir="$2"
+            shift
+            shift
+            ;;
+        -o|--output-file)
+            output_file="$2"
+            output_base_name=$(basename "${output_file%.*}")
+            shift
+            shift
+            ;;
+        -e|--exclude)
+            exclude_paths+=("$2")
+            shift
+            shift
+            ;;
+        -g|--git)
+            git_flag=true
+            shift
+            ;;
+        -sep|--file-separator)
+            file_separator="$2"
+            shift
+            shift
+            ;;
+        -desc|--file-descriptor)
+            file_descriptor="$2"
+            shift
+            shift
+            ;;
+        -ml|--max-lines)
+            max_lines="$2"
+            shift
+            shift
+            ;;
+        *)
+            echo "Unknown argument: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# Create the initial output file
+output_file_count=0
+create_new_output_file
+
+# Check if Git is available and if the source directory is a Git repository
+if [[ $git_flag == true ]]; then
+    git -C "$source_dir" rev-parse 2>/dev/null
+    if [[ $? -ne 0 ]]; then
+        echo "Error: Source directory is not a Git repository."
+        exit 1
+    fi
+fi
+
+# Retrieve Git-tracked files if the --git flag is provided
+if [[ $git_flag == true ]]; then
+    git_files=($(git -C "$source_dir" ls-files))
+fi
+
+
+# Function to append content to the current output file
+append_to_output_file() {
+    echo "$file_descriptor$relative_path" >> "$output_file"
+    cat "$1" >> "$output_file"
+    echo -e "\n$file_separator" >> "$output_file"
+    lines_appended=$(wc -l < "$1")
+    total_lines=$((total_lines + lines_appended))
+    echo "Appended $lines_appended lines to $output_file"
+}
+
+# Traverse the source directory and generate compressed output
+total_lines=0
+
+for file_path in $(find "$source_dir" -type f); do
+    relative_path="${file_path#$source_dir/}"
+    excluded=false
+
+    if [[ $git_flag == true ]]; then
+        if ! [[ " ${git_files[@]} " =~ " $relative_path " ]]; then
+            continue
+        fi
+    fi
+
+    for exclude_path in "${exclude_paths[@]}"; do
+        if [[ $relative_path == $exclude_path* ]]; then
+            excluded=true
+            break
+        fi
+    done
+
+    if [[ $excluded == false ]]; then
+        if [[ $max_lines -gt 0 && $total_lines -ge $max_lines ]]; then
+            create_new_output_file
+            total_lines=0
+        fi
+        append_to_output_file "$file_path"
+    fi
+done
+
+if [[ $output_files_count -eq 1 ]]; then
+    mv "$output_base_name""1.txt" "$output_base_name.txt"
+fi
+
+echo "Project compression completed."

@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Function to display help message
+display_help() {
+    echo "Usage: $0 [options] <file>"
+    echo "Expand a collapsed file structure into a directory."
+    echo
+    echo "Options:"
+    echo "  -h, --help                 Show this help message."
+    echo "  -t, --target-directory <dir>   Specify the target directory for expansion."
+    echo "  -sep, --file-separator <sep>     Specify the file separator (default is '###')."
+    echo "  -desc, --file-descriptor <desc>   Specify the file descriptor (default is 'FILE:')."
+    exit 0
+}
+
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
+            display_help
+            ;;
+        -t|--target-directory)
+            target_dir="$2"
+            shift
+            shift
+            ;;
+        -sep|--file-separator)
+            file_separator="$2"
+            shift
+            shift
+            ;;
+        -desc|--file-descriptor)
+            file_descriptor="$2"
+            shift
+            shift
+            ;;
+        *)
+            file_path="$1"
+            shift
+            ;;
+    esac
+done
+
+content_started=false
+
+# Read and process the file
+while IFS= read -r line; do
+    if [[ $line == $file_descriptor* ]]; then
+        # Extract relative path
+        relative_path="${line#$file_descriptor}"
+
+        # Create directories based on relative path
+        dir_path="$target_dir/$(dirname "$relative_path")"
+        mkdir -p "$dir_path"
+
+        # Create the file and append content
+        target_file="$target_dir/$relative_path"
+        touch "$target_file"
+        content_started=true
+    elif [[ -n $content_started ]]; then
+        # Append content to the previously created file
+        echo "$line" >> "$target_file"
+    fi
+done < "$file_path"
+
+echo "Project expansion completed."
