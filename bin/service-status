@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+SERVICE_NAME=$2
+
+systemctl is-active --quiet $1.service
+
+RESULT=$?
+
+if [ $RESULT -eq 0 ]; then
+    cecho "GREEN" "$SERVICE_NAME service is running"
+else
+    cecho "RED" "$SERVICE_NAME service is not running"
+fi
