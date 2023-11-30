@@ -1,0 +1,14 @@
+
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+prefix="given the following commits done on $BRANCH_NAME, suggest a PR title and description to go with it.\n"
+
+pr_info=$(git log main..$BRANCH_NAME --oneline)
+
+output=$prefix$pr_info
+
+echo $output > /var/tmp/gpt-pr-temp
+
+/mnt/c/Windows/system32/clip.exe < /var/tmp/gpt-pr-temp
+
+rm /var/tmp/gpt-pr-temp
