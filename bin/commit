@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Create a temporary file for commit message
+TMP_FILE=$(mktemp -t commit_msg.XXXXXXXXXX)
+
+# Use nano to get user input for commit message
+nano "$TMP_FILE"
+
+# Read the content of the file into the COMMIT_MSG variable
+COMMIT_MSG=$(cat "$TMP_FILE")
+
+# Remove temporary file
+rm "$TMP_FILE"
+
+# Stash changes, including untracked files
+git stash push --keep-index --include-untracked
+
+# Commit changes with the user-provided message
+git commit -m "$COMMIT_MSG"
+
+# Pop the changes from the stash
+git stash pop
