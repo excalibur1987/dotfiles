@@ -203,12 +203,11 @@ update_remote "$branch"
 
 eval "cd $initial_wd/$wk"
 
-git commit --allow-empty -m "$branch"
-git push origin $wk
-
 if [[ $create_pull_request -eq 1 ]]; then
+  git commit --allow-empty -m "$branch"
+  git push origin $wk
   run_command "Opening GitHub to create PR"
-
   gh pr create --web
 fi
+
 msg "${GREEN}Success.${NOFORMAT}"
