@@ -1,0 +1,12 @@
+
+prefix="given the following output of git diff --staged, give me an appropriate commit message using convential commit syntax and adding github emojis on the style of commitizen\n\n"
+
+staged_diff=$(git diff --staged)
+
+output=$prefix$staged_diff
+
+echo $output > /var/tmp/gpt-temp
+
+/mnt/c/Windows/system32/clip.exe < /var/tmp/gpt-temp
+
+rm /var/tmp/gpt-temp
