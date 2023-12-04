@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# Set default environment file path
+DEFAULT_ENV_FILE=~/envs/.psc.env
+ENV_FILE=$DEFAULT_ENV_FILE
+
+CLEAN_FLAG=false
+# Process command line options
+while getopts ":c:e:" opt; do
+  case $opt in
+    c) CLEAN_FLAG=true ;;
+    e) ENV_FILE=$OPTARG ;;
+    \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
+    :) echo "Option -$OPTARG requires an argument." >&2; exit 1 ;;
+  esac
+done
+
+# Shift command line arguments to skip processed options
+shift $((OPTIND-1))
+
+# Load environment variables from file
+if [ -f "$ENV_FILE" ]; then
+  source "$ENV_FILE"
+else
+  echo "Error: Environment file not found at $ENV_FILE."
+  exit 1
+fi
+
+TMP_FILE=/tmp/remote_dump.sql
+
+
+# Check if the dump file exists and is older than 2 days
+if [ -e "$TMP_FILE" ]; then
+  FILE_AGE=$(($(date +%s) - $(date -r "$TMP_FILE" +%s)))
+  MAX_AGE=$((2 * 24 * 60 * 60))  # 2 days in seconds
+
+  # Run pgpv_dump only if the file is older than 2 days or --clean flag is provided
+  if [ "$CLEAN_FLAG" = true ] || [ "$FILE_AGE" -gt "$MAX_AGE" ]; then
+    echo "Dump file exists and is older than 2 days or --clean flag is provided. Running pgpv_dump..."
+    pgpv_dump "$REMOTE_DB" "$TMP_FILE"
+    if [ $? -ne 0 ]; then
+      echo "Error: Failed to dump remote database."
+      exit 1
+    fi
+  else
+    echo "Dump file is not older than 2 days, and --clean flag is not provided. Skipping pgpv_dump."
+  fi
+else
+  # Run pgpv_dump if the file does not exist
+  echo "Dump file does not exist. Running pgpv_dump..."
+  pgpv_dump "$REMOTE_DB" "$TMP_FILE"
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to dump remote database."
+    exit 1
+  fi
+fi
+
+# Drop local database if it exists
+echo "Dropping local database if it exists..."
+psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$LOCAL_DB_NAME' AND leader_pid IS NULL;"
+psql postgres -c 'DROP DATABASE IF EXISTS "'$LOCAL_DB_NAME'";'
+
+# Create a new local database
+echo "Creating local database..."
+psql postgres -c 'CREATE DATABASE "'$LOCAL_DB_NAME'";'
+
+# Restore dumped data to the local database with pv for progress tracking
+echo "Restoring data to local database..."
+pv "$TMP_FILE" | psql -q "$LOCAL_DB" > /dev/null
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to restore data to local database."
+  exit 1
+fi
+
+# Clean up: remove the dump file
+echo "Cleaning up..."
+
+echo "Database migration completed successfully!"
+
+echo "Edit data for dev environment"
+psql $LOCAL_DB_NAME -c "UPDATE active_users SET email = 'omarali@planetpharmacyme.com';"
+USR_PWD="pbkdf2:sha256:600000\$e3P8SR6UfZlaNrjb\$eca5c982eea68295ad0383b1980f68a8471eae698cfa35aa87fca31df4df9048"
+psql $LOCAL_DB_NAME -c "UPDATE site_users SET email = 'omarali@planetpharmacyme.com', hash='"$USR_PWD"';"
+psql $LOCAL_DB_NAME -c "UPDATE areas SET email = 'omarali@planetpharmacyme.com';"
+
+echo "Database ready for use"

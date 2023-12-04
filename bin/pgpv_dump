@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Wrapper script for pg_dump with progress indicator
+
+# Ensure pv is installed
+if ! command -v pv > /dev/null; then
+    echo "Error: pv is not installed. Please install it before using this script."
+    exit 1
+fi
+
+# Database connection string
+REMOTE_DB=$1
+
+# Output file for pg_dump
+OUTPUT_FILE=$2
+
+# Run pg_dump with pv
+pg_dump "$REMOTE_DB" --no-acl --no-owner | pv -s $(pg_dump $REMOTE_DB --schema-only -F c | wc -c) > "$OUTPUT_FILE"
+
+echo "Database dump completed successfully."

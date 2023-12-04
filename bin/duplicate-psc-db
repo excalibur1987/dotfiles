@@ -1,0 +1,16 @@
+#!/bin/bash
+
+NEW_DB=$1
+
+# Drop local database if it exists
+echo "Dropping local database if it exists..."
+psql postgres -c 'DROP DATABASE IF EXISTS "'$NEW_DB'";'
+
+# Drop local database if it exists
+echo "Dropping local database if it exists..."
+psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$NEW_DB' AND leader_pid IS NULL;"
+psql postgres -c 'DROP DATABASE IF EXISTS "'$NEW_DB'";'
+psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'psc-prod' AND leader_pid IS NULL;"
+
+echo "Creating database from template"
+psql postgres -c 'CREATE DATABASE "'$NEW_DB'" WITH TEMPLATE "psc-prod";'
