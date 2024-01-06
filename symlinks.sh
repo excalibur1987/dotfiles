@@ -11,7 +11,5 @@ do
     fi
 done
 
-sudo cp $(pwd)/dot-files/hosts /etc/hosts
-
 echo "---------------Symlinks Added------------"
 
