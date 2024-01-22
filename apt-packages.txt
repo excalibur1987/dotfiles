@@ -17,11 +17,6 @@ postgis
 postgresql
 postgresql-postgis
 python3-cffi
-python3.10
-python3.10-cffi
-python3.10-dev
-python3.10-pip
-python3.10-venv
 qdirstat
 qtbase5-dev
 qtbase5-doc
