@@ -1,5 +1,5 @@
 
-prefix="given the following output of git diff --staged, give me an appropriate commit message using convential commit syntax and adding github emojis on the style of commitizen.Don't include any info regarding closed issues or not mentioned PRs\n\n"
+prefix="given the following output of git diff --staged, give me an appropriate commit message using convential commit syntax and adding github emojis on the style of commitizen.Don't include any info regarding closed issues or not mentioned PRs\nAnd make it nicely formatted\n"
 
 staged_diff=$(git diff --staged)
 

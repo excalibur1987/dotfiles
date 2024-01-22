@@ -79,7 +79,7 @@ echo "Database migration completed successfully!"
 
 echo "Edit data for dev environment"
 psql $LOCAL_DB_NAME -c "UPDATE active_users SET email = 'omarali@planetpharmacyme.com';"
-USR_PWD="pbkdf2:sha256:600000\$e3P8SR6UfZlaNrjb\$eca5c982eea68295ad0383b1980f68a8471eae698cfa35aa87fca31df4df9048"
+USR_PWD="pbkdf2:sha256:600000\$BwuRaYQwBbDICJob\$b34aa7c0f7c0b8520c66344756c3d114cec60d0daa4dc458c2a70b228cbeb518"
 psql $LOCAL_DB_NAME -c "UPDATE site_users SET email = 'omarali@planetpharmacyme.com', hash='"$USR_PWD"';"
 psql $LOCAL_DB_NAME -c "UPDATE areas SET email = 'omarali@planetpharmacyme.com';"
 
