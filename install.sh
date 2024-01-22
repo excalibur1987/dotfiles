@@ -11,4 +11,6 @@ source ./install-custom-scripts.sh
 
 sudo apt autoremove -y
 
+source ./post-install.sh
+
 echo "---------------Completed Successfully------------"
