@@ -89,17 +89,17 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$PATH:/opt/mssql-tools18/bin"
 export PATH="$HOME/.poetry/bin:$PATH"
 
-export PNPM_HOME="/home/omar/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
 # pnpm
-export PNPM_HOME="/home/omar/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 export PATH="$PATH:/opt/mssql-tools/bin"
 
 # add bin scripts to path
-export PATH="$PATH:/home/omar/dotfiles/bin"
+export PATH="$PATH:$HOME/dotfiles/bin"
 export LD_LIBRARY_PATH=/usr/local/lib
 
 # add snap bin to path
@@ -116,3 +116,11 @@ export CHANGELOG_GITHUB_TOKEN="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"
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
+. "$HOME/.cargo/env"
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

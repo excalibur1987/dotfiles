@@ -106,7 +106,7 @@ source $ZSH/oh-my-zsh.sh
 export PATH="$PATH:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
 
 # pnpm
-export PNPM_HOME="/home/omar/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 # pnpm end
 
@@ -114,9 +114,9 @@ export PATH="$PATH:/opt/mssql-tools/bin"
 
 # add bin scripts to path
 export LD_LIBRARY_PATH="/usr/local/lib"
-export PATH="$PATH:/home/omar/dotfiles/bin:$LD_LIBRARY_PATH"
+export PATH="$PATH:$HOME/dotfiles/bin:$LD_LIBRARY_PATH"
 
-MSSQLTOOLSSERVICE_PATH=/home/omar/Documents/Microsoft.SqlTools.ServiceLayer-rhel-x64-net6.0/
+MSSQLTOOLSSERVICE_PATH=$HOME/Documents/Microsoft.SqlTools.ServiceLayer-rhel-x64-net6.0/
 
 # add snap bin to path
 export PATH="$PATH:/snap/bin"
@@ -131,3 +131,11 @@ export CHANGELOG_GITHUB_TOKEN="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"
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
+. "$HOME/.cargo/env"
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

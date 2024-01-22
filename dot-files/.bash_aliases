@@ -30,4 +30,3 @@ alias pi="pnpm i --shamefully-hoist"
 
 alias python="python3"
 alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
-
