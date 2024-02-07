@@ -1,0 +1,36 @@
+display_help() {
+    echo "Usage: $0 [options] <file>"
+    echo "Expand a collapsed file structure into a directory."
+    echo
+    echo "Options:"
+    echo "  -h, --help                 Show this help message."
+    echo "  -p, --port <int>   Specify the assigned port."
+    echo "  -m, --mappings-dir <dir>     Specify the path for mappings."
+    exit 0
+}
+
+PORT=8080
+MAPPING_PATH="/home/"$(whoami)"/wiremock"
+
+
+for arg in "$@"; do
+    case "$arg" in
+        -h=*) display_help ;;
+        --help=*) display_help ;;
+        -p=*) PORT="${arg#*=}" ;;
+        --port=*) PORT="${arg#*=}" ;;
+        -m=*) MAPPING_PATH="${arg#*=}" ;;
+        --mappings-dir=*) MAPPING_PATH="${arg#*=}" ;;
+    esac
+done
+
+
+if [ "$( docker container inspect -f '{{.State.Running}}' 'wiremock' )" = "true" ]; then
+    exit 0
+fi
+
+docker run -d -it --rm \
+  -p $PORT:8080 \
+  --name wiremock \
+  -v $MAPPING_PATH:/home/wiremock  \
+  wiremock/wiremock:3.3.1
