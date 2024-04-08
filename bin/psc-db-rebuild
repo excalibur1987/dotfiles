@@ -26,8 +26,24 @@ else
   exit 1
 fi
 
-TMP_FILE=/tmp/remote_dump.sql
+TMP_FILE=$HOME"/db-backup/psc-backup.backup"
 
+
+run_pg_dump_remotely(){
+    echo "Running dump process remotely"
+    OUTPUT_FILE="psc-backup.backup"
+    BCKUP_DIR="/home/web/db-backup"
+    OUTPUT_PATH=$BCKUP_DIR"/"$OUTPUT_FILE
+    echo "Dumping database"
+    COMMAND='pg_dump '$REMOTE_DB' --no-acl --no-owner | pv -s $(pg_dump '$REMOTE_DB' --schema-only -F c | wc -c) > '$OUTPUT_PATH
+    ssh 'web@172.232.217.156' $COMMAND
+    echo "Compressing dump file"
+    ssh 'web@172.232.217.156' 'cd '$BCKUP_DIR' && tar -czvf '$OUTPUT_FILE'.tar.gz '$OUTPUT_FILE
+    echo "Fetching dump file"
+    rsync -r -v --progress -e ssh web@172.232.217.156:$OUTPUT_PATH'.tar.gz' $TMP_FILE'.tar.gz'
+    echo "Extracting dump file"
+    tar -xzvf $TMP_FILE'.tar.gz' -C $HOME"/db-backup"
+}
 
 # Check if the dump file exists and is older than 2 days
 if [ -e "$TMP_FILE" ]; then
@@ -37,7 +53,9 @@ if [ -e "$TMP_FILE" ]; then
   # Run pgpv_dump only if the file is older than 2 days or --clean flag is provided
   if [ "$CLEAN_FLAG" = true ] || [ "$FILE_AGE" -gt "$MAX_AGE" ]; then
     echo "Dump file exists and is older than 2 days or --clean flag is provided. Running pgpv_dump..."
-    pgpv_dump "$REMOTE_DB" "$TMP_FILE"
+
+    run_pg_dump_remotely
+    # pgpv_dump "$REMOTE_DB" "$TMP_FILE"
     if [ $? -ne 0 ]; then
       echo "Error: Failed to dump remote database."
       exit 1
@@ -48,7 +66,8 @@ if [ -e "$TMP_FILE" ]; then
 else
   # Run pgpv_dump if the file does not exist
   echo "Dump file does not exist. Running pgpv_dump..."
-  pgpv_dump "$REMOTE_DB" "$TMP_FILE"
+  run_pg_dump_remotely
+  # pgpv_dump "$REMOTE_DB" "$TMP_FILE"
   if [ $? -ne 0 ]; then
     echo "Error: Failed to dump remote database."
     exit 1
@@ -78,9 +97,7 @@ echo "Cleaning up..."
 echo "Database migration completed successfully!"
 
 echo "Edit data for dev environment"
-psql $LOCAL_DB_NAME -c "UPDATE active_users SET email = 'omarali@planetpharmacyme.com';"
 USR_PWD="pbkdf2:sha256:600000\$BwuRaYQwBbDICJob\$b34aa7c0f7c0b8520c66344756c3d114cec60d0daa4dc458c2a70b228cbeb518"
-psql $LOCAL_DB_NAME -c "UPDATE site_users SET email = 'omarali@planetpharmacyme.com', hash='"$USR_PWD"';"
-psql $LOCAL_DB_NAME -c "UPDATE areas SET email = 'omarali@planetpharmacyme.com';"
+psql $LOCAL_DB_NAME -c "UPDATE site_users SET hash='"$USR_PWD"';"
 
 echo "Database ready for use"
