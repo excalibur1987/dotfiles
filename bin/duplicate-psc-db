@@ -14,3 +14,4 @@ psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE d
 
 echo "Creating database from template"
 psql postgres -c 'CREATE DATABASE "'$NEW_DB'" WITH TEMPLATE "psc-prod";'
+echo "Database created successfully"

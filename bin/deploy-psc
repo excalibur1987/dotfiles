@@ -1,0 +1,19 @@
+#!/bin/bash
+
+cd ~/apps/planet-support-center
+git fetch
+git pull
+set -o allexport
+source ~/envs/planet-support-center/.production.env
+set +o allexport
+poetry run flask db upgrade
+sudo systemctl daemon-reload
+if pnpm run build; then
+cecho "GREEN" "Assets are built successfully"
+else
+cecho "RED" "Error building Assets"
+fi
+sudo systemctl restart planet-support-center.service
+service-status planet-support-center.service "PSC Server"
+service-status planet-support-center-worker.service "PSC Worker"
+service-status planet-support-center-clock.service "PSC Clock"

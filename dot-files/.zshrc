@@ -68,7 +68,7 @@ ZSH_THEME="fwalch"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git postgres npm python docker docker-compose)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting postgres npm python docker docker-compose)
 
 
 export NVM_DIR="$HOME/.nvm"

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+BRANCH_NAME=$1
+
+DIR=/home/omar/repos/planet-support-center
+
+
+cd $DIR
+
+worktree-add -B main $BRANCH_NAME
+
+cp $DIR/.env $DIR/$BRANCH_NAME/.env
+cd $DIR/$BRANCH_NAME
+
+poetry install>/dev/null&pnpm i --shamefully-hoist>/dev/null&
+
+DB_NAME="psc-"$BRANCH_NAME
+
+SOURCE_STRING=":5432/psc-prod"
+REPLACE_STRING=":5432/"$DB_NAME
+
+while read line; do
+    echo ${line//$SOURCE_STRING/$REPLACE_STRING}
+done < $DIR/$BRANCH_NAME/.env > $DIR/$BRANCH_NAME/.env.t
+
+mv $DIR/$BRANCH_NAME/.env{.t,}
+
+code $DIR/$BRANCH_NAME
+
+duplicate-psc-db $DB_NAME
