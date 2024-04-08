@@ -1,25 +1,19 @@
 #!/bin/bash
 
-cd ~/apps/wasfatyp-server
-git fetch && git reset --hard main
-git fetch&&git pull
-bun install
-
-
-ENV_FILE="~/envs/wasfatyp-server/.frontend."$1".env"
-
-cd ~/apps/wasfatyp-frontend
-git fetch && git reset --hard main
-git fetch&&git pull
+cd ~/apps/planet-support-center
+git fetch
+git pull
 set -o allexport
-source $ENV_FILE
+source ~/envs/planet-support-center/.production.env
 set +o allexport
-bun run build
-
+poetry run flask db upgrade
 sudo systemctl daemon-reload
-
-sudo systemctl restart wasfatyp.service
-
-service-status wasfatyp-api-server.service "WasfatyP Server"
-service-status wasfatyp-api-worker.service "WasfatyP Worker"
-service-status wasfatyp-frontend.service "WasfatyP Frontend"
+if pnpm run build; then
+cecho "GREEN" "Assets are built successfully"
+else
+cecho "RED" "Error building Assets"
+fi
+sudo systemctl restart planet-support-center.service
+service-status planet-support-center.service "PSC Server"
+service-status planet-support-center-worker.service "PSC Worker"
+service-status planet-support-center-clock.service "PSC Clock"

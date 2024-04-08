@@ -1,0 +1,25 @@
+#!/bin/bash
+
+cd ~/apps/wasfatyp-server
+git fetch && git reset --hard main
+git fetch&&git pull
+bun install
+
+
+ENV_FILE="~/envs/wasfatyp-server/.frontend."$1".env"
+
+cd ~/apps/wasfatyp-frontend
+git fetch && git reset --hard main
+git fetch&&git pull
+set -o allexport
+source $ENV_FILE
+set +o allexport
+bun run build
+
+sudo systemctl daemon-reload
+
+sudo systemctl restart wasfatyp.service
+
+service-status wasfatyp-api-server.service "WasfatyP Server"
+service-status wasfatyp-api-worker.service "WasfatyP Worker"
+service-status wasfatyp-frontend.service "WasfatyP Frontend"
