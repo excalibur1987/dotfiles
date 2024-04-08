@@ -1,14 +1,14 @@
 #!/bin/bash
 
-cd ~/apps/wasfatyp-server
+cd /home/web/apps/wasfatyp-server
 git fetch && git reset --hard main
 git fetch&&git pull
 bun install
 
 
-ENV_FILE="~/envs/wasfatyp-server/.frontend."$1".env"
+ENV_FILE="/home/web/envs/wasfatyp-server/.frontend."$1".env"
 
-cd ~/apps/wasfatyp-frontend
+cd /home/web/apps/wasfatyp-frontend
 git fetch && git reset --hard main
 git fetch&&git pull
 set -o allexport
