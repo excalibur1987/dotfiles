@@ -1,16 +1,14 @@
 #!/bin/bash
 
 cd /home/web/apps/wasfatyp-server
-git fetch && git reset --hard main
-git fetch&&git pull
+git add . && git stash -m "pre-fetch"  && git fetch origin && git reset --hard origin/main
 bun install
 
 
 ENV_FILE="/home/web/envs/wasfatyp-server/.frontend."$1".env"
 
 cd /home/web/apps/wasfatyp-frontend
-git fetch && git reset --hard main
-git fetch&&git pull
+git add . && git stash -m "pre-fetch" && git fetch origin && git reset --hard origin/main
 set -o allexport
 source $ENV_FILE
 set +o allexport
@@ -18,8 +16,11 @@ bun run build
 
 sudo systemctl daemon-reload
 
-sudo systemctl restart wasfatyp.service
+sudo systemctl restart wasfatyp-api-server.service
+sudo systemctl restart wasfatyp-api-worker.service
 
-service-status wasfatyp-api-server.service "WasfatyP Server"
-service-status wasfatyp-api-worker.service "WasfatyP Worker"
-service-status wasfatyp-frontend.service "WasfatyP Frontend"
+wasfaty-zerodown-restart
+
+service-status wasfatyp-api-server "WasfatyP Server"
+service-status wasfatyp-api-worker "WasfatyP Worker"
+service-status wasfatyp-frontend "WasfatyP Frontend"

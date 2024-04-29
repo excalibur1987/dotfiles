@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Function to find a random available port
+find_free_port() {
+    local port
+    while : ; do
+        port=$((RANDOM + 2000)) # Start from 2000
+        ss -tnlp | grep -q ":$port " || break
+    done
+    echo "$port"
+}
+
+# Duplicate systemd service file
+duplicate_service() {
+    local source_file="$1"
+    local new_file="$2"
+    sudo cp "$source_file" "$new_file"
+}
+
+# Modify the duplicated service file to include the new PORT environment variable
+modify_service_file() {
+    local service_file="$1"
+    local port="$2"
+    sudo sed -i "s/Environment=\"HOST=localhost;PORT=[0-9]\+\"/Environment=\"HOST=localhost;PORT=$port\"/" "$service_file"
+}
+
+# Update nginx configuration file with the new port
+update_nginx_config() {
+    local nginx_config="/etc/nginx/sites-available/wasfatyp"
+    local port="$1"
+    sudo sed -i "s/proxy_pass http:\/\/localhost:[0-9]\+; # frontend/proxy_pass http:\/\/localhost:$port; # frontend/g" "$nginx_config"
+}
+
+# Main script
+
+# Duplicate service file
+duplicate_service "/etc/systemd/system/wasfatyp-frontend.service" "/etc/systemd/system/wasfatyp-frontend-temp.service"
+
+# Find a free port
+new_port=$(find_free_port)
+
+# Modify duplicated service file
+modify_service_file "/etc/systemd/system/wasfatyp-frontend-temp.service" "$new_port"
+
+# Update nginx configuration file
+update_nginx_config "$new_port"
+
+# Reload systemd and nginx to apply changes
+sudo systemctl daemon-reload
+sudo systemctl start wasfatyp-frontend-temp.service
+sudo service nginx restart
+sudo systemctl stop wasfatyp-frontend.service
+
+
+duplicate_service "/etc/systemd/system/wasfatyp-frontend-temp.service" "/etc/systemd/system/wasfatyp-frontend.service"
+new_port=$(find_free_port)
+modify_service_file "/etc/systemd/system/wasfatyp-frontend.service" "$new_port"
+update_nginx_config "$new_port"
+
+
+sudo systemctl daemon-reload
+sudo systemctl start wasfatyp-frontend.service
+sudo service nginx restart
+sudo systemctl stop wasfatyp-frontend-temp.service
+

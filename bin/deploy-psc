@@ -14,6 +14,6 @@ else
 cecho "RED" "Error building Assets"
 fi
 sudo systemctl restart planet-support-center.service
-service-status planet-support-center.service "PSC Server"
-service-status planet-support-center-worker.service "PSC Worker"
-service-status planet-support-center-clock.service "PSC Clock"
+service-status planet-support-center "PSC Server"
+service-status planet-support-center-worker "PSC Worker"
+service-status planet-support-center-clock "PSC Clock"
