@@ -26,7 +26,7 @@ modify_service_file() {
 
 # Update nginx configuration file with the new port
 update_nginx_config() {
-    local nginx_config="/etc/nginx/sites-available/wasfatyp"
+    local nginx_config="/etc/nginx/sites-enabled/wasfatyp"
     local port="$1"
     sudo sed -i "s/proxy_pass http:\/\/localhost:[0-9]\+; # frontend/proxy_pass http:\/\/localhost:$port; # frontend/g" "$nginx_config"
 }
