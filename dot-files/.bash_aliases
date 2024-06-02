@@ -30,3 +30,7 @@ alias pi="pnpm i --shamefully-hoist"
 
 alias python="python3"
 alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
+
+# more ls aliases
+alias llm="ls -alF --block-size=MB"
+alias llg="s -alF --block-size=GB"
