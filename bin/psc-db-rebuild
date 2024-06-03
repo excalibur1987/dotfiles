@@ -4,6 +4,8 @@
 DEFAULT_ENV_FILE=~/envs/.psc.env
 ENV_FILE=$DEFAULT_ENV_FILE
 
+SERVER_IP=$(getent hosts psc-vps | awk '{ print $1 }')
+
 CLEAN_FLAG=false
 # Process command line options
 while getopts ":c:e:" opt; do
@@ -28,6 +30,7 @@ fi
 
 TMP_FILE=$HOME"/db-backup/psc-backup.backup"
 
+REMOTE_DB="postgres://postgres:"$REMOTE_DB_PWD"@"$SERVER_IP":5432/psc-production"
 
 run_pg_dump_remotely(){
     echo "Running dump process remotely"
@@ -36,11 +39,11 @@ run_pg_dump_remotely(){
     OUTPUT_PATH=$BCKUP_DIR"/"$OUTPUT_FILE
     echo "Dumping database"
     COMMAND='pg_dump '$REMOTE_DB' --no-acl --no-owner | pv -s $(pg_dump '$REMOTE_DB' --schema-only -F c | wc -c) > '$OUTPUT_PATH
-    ssh 'web@172.232.217.156' $COMMAND
+    ssh 'web@psql-vps' $COMMAND
     echo "Compressing dump file"
-    ssh 'web@172.232.217.156' 'cd '$BCKUP_DIR' && tar -czvf '$OUTPUT_FILE'.tar.gz '$OUTPUT_FILE
+    ssh 'web@psql-vps' 'cd '$BCKUP_DIR' && tar -czvf '$OUTPUT_FILE'.tar.gz '$OUTPUT_FILE
     echo "Fetching dump file"
-    rsync -r -v --progress -e ssh web@172.232.217.156:$OUTPUT_PATH'.tar.gz' $TMP_FILE'.tar.gz'
+    rsync -r -v --progress -e ssh web@psql-vps:$OUTPUT_PATH'.tar.gz' $TMP_FILE'.tar.gz'
     echo "Extracting dump file"
     tar -xzvf $TMP_FILE'.tar.gz' -C $HOME"/db-backup"
 }
