@@ -106,8 +106,11 @@ source $ZSH/oh-my-zsh.sh
 export PATH="$PATH:~/azuredatastudio-linux-x64:/usr/bin:$HOME/.local/lib/python3.8/site-packages:$HOME/.local/bin"
 
 # pnpm
-export PNPM_HOME="$HOME/.local/share/pnpm"
-export PATH="$PNPM_HOME:$PATH"
+export PNPM_HOME="/home/omar/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
 # pnpm end
 
 export PATH="$PATH:/opt/mssql-tools/bin"
