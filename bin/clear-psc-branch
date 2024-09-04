@@ -2,9 +2,9 @@
 
 BRANCH_NAME=$1
 
-NEW_DB="psc-"$BRANCH_NAME
+NEW_DB="psc-$BRANCH_NAME"
 
-DIR=/home/omar/repos/planet-support-center
+DIR=/home/omar/repos/production/planet-support-center
 
 
 cd $DIR

@@ -1,30 +1,75 @@
 #!/usr/bin/env bash
 
-BRANCH_NAME=$1
+parse_params() {
+  # default values of variables set from params
+  create_upstream=1
+  create_pull_request=0
+  # prefix="$(git config github.user)/"
+  base='main'
+  branch=''
 
-DIR=/home/omar/repos/planet-support-center
+  while :; do
+    case "${1-}" in
+    -h | --help) usage ;;
+    -v | --verbose) set -x ;;
+    --no-color) NO_COLOR=1 ;;
+    -N | --no-create-upstream) create_upstream=0 ;;
+    -b | --branch)
+      branch="$2"
+      shift
+      ;;
+    -B | --base)
+      base="${2-}"
+      shift
+      ;;
+    -?*) die "Unknown option: $1" ;;
+    *) break ;;
+    esac
+    shift
+  done
+
+  args=("$@")
+
+  # check required params and arguments
+  # [[ -z "${param-}" ]] && die "Missing required parameter: param"
+  [[ ${#args[@]} -eq 0 ]] && die "Missing script arguments"
+
+  # if a branch was not specified, generate one based on the prefix and folder name
+  if [[ -z "$branch" ]]; then
+    branch="${args[0]}"
+  fi
+
+  wk="${args[0]}"
+
+  return 0
+}
+
+parse_params "$@"
 
 
+DB_NAME="psc-$branch"
+duplicate-psc-db $DB_NAME&
+
+DIR=/home/omar/repos/production/planet-support-center
 cd $DIR
 
-worktree-add -B main $BRANCH_NAME
+if [ $create_upstream -eq 0 ]; then
+    worktree-add -B $base -N $branch
+else
+    worktree-add -B $base $branch
+fi
 
-cp $DIR/.env $DIR/$BRANCH_NAME/.env
-cd $DIR/$BRANCH_NAME
+cp $DIR/.env $DIR/$branch/.env
+cd $DIR/$branch
 
-poetry install>/dev/null&pnpm i --shamefully-hoist>/dev/null&
 
-DB_NAME="psc-"$BRANCH_NAME
+old_string=":5432/psc-prod"
+new_string=":5432/$DB_NAME"
 
-SOURCE_STRING=":5432/psc-prod"
-REPLACE_STRING=":5432/"$DB_NAME
+file_path="$DIR/$branch/.env"
+sed -i "s|$old_string|$new_string|g" "$file_path"
 
-while read line; do
-    echo ${line//$SOURCE_STRING/$REPLACE_STRING}
-done < $DIR/$BRANCH_NAME/.env > $DIR/$BRANCH_NAME/.env.t
+code $DIR/$branch
 
-mv $DIR/$BRANCH_NAME/.env{.t,}
-
-code $DIR/$BRANCH_NAME
-
-duplicate-psc-db $DB_NAME
+pnpm i --shamefully-hoist
+poetry install --no-root

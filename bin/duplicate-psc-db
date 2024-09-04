@@ -2,16 +2,19 @@
 
 NEW_DB=$1
 
-# Drop local database if it exists
-echo "Dropping local database if it exists..."
-psql postgres -c 'DROP DATABASE IF EXISTS "'$NEW_DB'";'
+SOURCE_DB='psc-prod'
+
+if (( $# == 3 )); then
+    SOURCE_DB=$2
+fi
+
 
 # Drop local database if it exists
 echo "Dropping local database if it exists..."
-psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$NEW_DB' AND leader_pid IS NULL;"
+psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname LIKE '$NEW_DB%' AND leader_pid IS NULL;"
 psql postgres -c 'DROP DATABASE IF EXISTS "'$NEW_DB'";'
-psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'psc-prod' AND leader_pid IS NULL;"
+psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '"$SOURCE_DB"' AND leader_pid IS NULL;"
 
 echo "Creating database from template"
-psql postgres -c 'CREATE DATABASE "'$NEW_DB'" WITH TEMPLATE "psc-prod";'
+psql postgres -c 'CREATE DATABASE "'$NEW_DB'" WITH TEMPLATE "'$SOURCE_DB'";'
 echo "Database created successfully"
