@@ -1,0 +1,95 @@
+#!/usr/bin/python3
+
+import argparse
+import os
+
+
+def concatenate_python_files(
+    project_root: str,
+    output_file: str,
+    excluded_dirs: list[str],
+    file_types: list[str],
+):
+    """Concatenates all specified files within a directory and its subdirectories.
+
+    Args:
+        project_root (str): The path to the root directory containing the Python files.
+        output_file (str, optional): The name of the output file.
+    """
+
+    with open(output_file, "w", encoding="utf-8") as outfile:
+        for dirpath, dirnames, filenames in os.walk(project_root):
+            # Exclude dot directories
+            dirnames[:] = [
+                d
+                for d in dirnames
+                if not d.startswith(".")
+                and os.path.join(dirpath, d).replace(f"{project_root}/", "")
+                not in excluded_dirs
+            ]
+
+            for filename in filenames:
+                if (
+                    not filename.startswith(".")
+                    and filename.split(".")[-1] in file_types
+                ):
+                    filepath = os.path.join(dirpath, filename)
+                    with open(filepath, "r", encoding="utf-8") as infile:
+                        outfile.write(
+                            f"# --- Start of file: {filepath.replace(project_root, '')} ---\n"
+                        )
+                        outfile.write(infile.read())
+                        outfile.write(
+                            f"\n# --- End of file: {filepath.replace(project_root, '')} ---\n\n"
+                        )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "project_root", type=str, help="Path to target project root directory"
+    )
+
+    parser.add_argument(
+        "-o",
+        "--output-file",
+        nargs="?",
+        type=str,
+        help="Path for the output file, default will be the name of the target directory with '_concatenated.txt' appended",
+    )
+
+    parser.add_argument(
+        "-f",
+        "--file-types",
+        nargs=1,
+        action="append",
+        type=str,
+        help="File extensions to concatenate, may be repeated",
+    )
+
+    parser.add_argument(
+        "-e",
+        "--excluded-dirs",
+        nargs=1,
+        action="append",
+        help="Relative path of dirs to exclude, may be repeated",
+    )
+
+    args = parser.parse_args()
+
+    project_root: str = args.project_root
+    output_file: str | None = args.output_file
+    if output_file is None:
+        output_file = f"{project_root.split(os.pathsep)[-1]}_concatenated.txt"
+
+    excluded_dirs = list(d[0] for d in args.excluded_dirs)
+    file_types = list(f[0] for f in args.file_types)
+    concatenate_python_files(
+        project_root=project_root,
+        output_file=output_file,
+        excluded_dirs=excluded_dirs,
+        file_types=file_types,
+    )
+
+    print(f"Concatenated Python files written to: {output_file}")

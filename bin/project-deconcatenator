@@ -1,0 +1,72 @@
+#!/usr/bin/python3
+
+import argparse
+import os
+from pathlib import Path
+
+
+def deconcatenate_file(project_root: str, source_file: str):
+
+    with open(source_file, "r") as fp:
+        lines = fp.readlines()
+
+    file_start_indicator = "# --- Start of file: "
+    file_end_indicator = "# --- End of file: "
+
+    file_content = ""
+
+    new_filepath: Path | None = None
+
+    for line in lines:
+        if line.startswith("# --- Start of file: "):
+            new_filepath = Path(
+                os.path.join(project_root, line.replace(file_start_indicator, "")[:-5])
+            )
+            continue
+
+        if line.startswith(file_end_indicator):
+            try:
+                os.makedirs(
+                    new_filepath.parent,
+                    exist_ok=True,
+                )
+                with open(new_filepath, "w") as fp:
+                    fp.write(file_content[:-1])
+                new_filepath = None
+                file_content = ""
+                continue
+            except Exception as e:
+                print(line)
+                print(file_content)
+                print(new_filepath)
+                raise e
+        file_content += line
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "source_file",
+        type=str,
+        help="Source file of concatenated project",
+    )
+
+    parser.add_argument(
+        "-r",
+        "--project-root",
+        nargs="?",
+        type=str,
+        required=True,
+        help="Specify project target root dir",
+    )
+
+    args = parser.parse_args()
+
+    project_root: str = args.project_root
+    source_file: str = args.source_file
+
+    os.makedirs(project_root, exist_ok=True)
+
+    deconcatenate_file(project_root=project_root, source_file=source_file)
