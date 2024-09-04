@@ -30,3 +30,4 @@ sshpass
 unixodbc-dev
 zlib1g-dev
 zsh
+jq
