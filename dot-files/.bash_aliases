@@ -35,3 +35,6 @@ alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
 # more ls aliases
 alias llm="ls -alF --block-size=MB"
 alias llg="s -alF --block-size=GB"
+
+alias diff="git --no-pager diff --cached"
+alias diff-save="git diff --cached > staged_changes.diff"
