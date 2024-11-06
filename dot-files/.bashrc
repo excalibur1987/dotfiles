@@ -83,44 +83,21 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export NVM_DIR="$HOME/.nvm"
+[ -s "$HOME/.bash_aliases" ] && \. "$HOME/.bash_aliases"
+[ -s "$HOME/.env_vars" ] && \. "$HOME/.env_vars"
+
+
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-export PATH="$PATH:/opt/mssql-tools18/bin"
-export PATH="$HOME/.poetry/bin:$PATH"
 
-export PNPM_HOME="$HOME/.local/share/pnpm"
-export PATH="$PNPM_HOME:$PATH"
 
-# pnpm
-export PNPM_HOME="$HOME/.local/share/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-# pnpm end
-export PATH="$PATH:/opt/mssql-tools/bin"
-
-# add bin scripts to path
-export PATH="$PATH:$HOME/dotfiles/bin"
-export LD_LIBRARY_PATH=/usr/local/lib
-
-# add snap bin to path
-export PATH="$PATH:/snap/bin"
-
-export BROWSER="/mnt/c/browser.exe"
-export CHANGELOG_GITHUB_TOKEN="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"
+[ -s "$HOME/.cargo/env" ] && \. "$HOME/.cargo/env"
+[ -s "$HOME/.bun/_bun" ] && \. "$HOME/.bun/_bun"
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-. "$HOME/.cargo/env"
 
-# bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+[ -z "$(ps -ef | grep cron | grep -v grep)" ] && sudo /etc/init.d/cron start &> /dev/null
