@@ -4,6 +4,7 @@ parse_params() {
   # default values of variables set from params
   create_upstream=1
   create_pull_request=0
+  duplicate_db=1
   # prefix="$(git config github.user)/"
   base='main'
   branch=''
@@ -13,6 +14,7 @@ parse_params() {
     -h | --help) usage ;;
     -v | --verbose) set -x ;;
     --no-color) NO_COLOR=1 ;;
+    --no-duplicate-db) duplicate_db=0 ;;
     -N | --no-create-upstream) create_upstream=0 ;;
     -b | --branch)
       branch="$2"
@@ -47,8 +49,10 @@ parse_params() {
 parse_params "$@"
 
 
-DB_NAME="psc-$branch"
-duplicate-psc-db $DB_NAME&
+if [ $duplicate_db -eq 1 ]; then
+    DB_NAME="psc-$branch"
+    duplicate-psc-db $DB_NAME&
+fi
 
 DIR=/home/omar/repos/production/planet-support-center
 cd $DIR
