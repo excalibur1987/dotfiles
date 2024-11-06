@@ -38,7 +38,7 @@ run_pg_dump_remotely(){
     BCKUP_DIR="/home/web/db-backup"
     OUTPUT_PATH=$BCKUP_DIR"/"$OUTPUT_FILE
     echo "Dumping database"
-    COMMAND='pg_dump '$REMOTE_DB' --no-acl --no-owner | pv -s $(pg_dump '$REMOTE_DB' --schema-only -F c | wc -c) > '$OUTPUT_PATH
+    COMMAND='pg_dump '$REMOTE_DB' --exclude-table-data daily_user_item_sales --no-acl --no-owner | pv -s $(pg_dump '$REMOTE_DB' --schema-only -F c | wc -c) > '$OUTPUT_PATH
     ssh 'web@psql-vps' $COMMAND
     echo "Compressing dump file"
     ssh 'web@psql-vps' 'cd '$BCKUP_DIR' && tar -czvf '$OUTPUT_FILE'.tar.gz '$OUTPUT_FILE
