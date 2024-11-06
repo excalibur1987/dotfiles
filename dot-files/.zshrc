@@ -116,5 +116,6 @@ source $ZSH/oh-my-zsh.sh
 [ -s "$HOME/.cargo/env" ] && \. "$HOME/.cargo/env"
 [ -s "$HOME/.bun/_bun" ] && \. "$HOME/.bun/_bun"
 
+[ -s "$HOME/.local_vars" ] && \. "$HOME/.local_vars"
 
 [ -z "$(ps -ef | grep cron | grep -v grep)" ] && sudo /etc/init.d/cron start &> /dev/null
