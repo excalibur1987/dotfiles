@@ -1,0 +1,9 @@
+if [ -z "$1" ]; then
+    echo "Usage: $0 <directory>"
+    exit 1
+fi
+
+DIR=$(realpath "$1")  # Convert relative path to absolute path
+
+total=$(find $DIR -type d -name "node_modules" -not -path "*/node_modules/*" | wc -l)
+find $DIR -type d -name "node_modules" -not -path "*/node_modules/*" -print0 | pv -l -s $total | xargs -0 rm -rf
