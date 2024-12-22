@@ -1,106 +1,54 @@
 #!/bin/bash
 
+set -Eeuo pipefail
+
 # Set default environment file path
 DEFAULT_ENV_FILE=~/envs/.psc.env
 ENV_FILE=$DEFAULT_ENV_FILE
 
+# Load environment variables
+if [ -f "$ENV_FILE" ]; then
+    source "$ENV_FILE"
+else
+    echo "Error: Environment file not found: $ENV_FILE"
+    exit 1
+fi
+
 SERVER_IP=$(getent hosts psql-vps | awk '{ print $1 }')
 
+# Default values
 CLEAN_FLAG=false
+LOCAL_DB_NAME="psc-prod"
+REMOTE_DB_NAME="psc-production"
+EXCLUDE_TABLES="daily_user_item_sales"
+
 # Process command line options
-while getopts ":c:e:" opt; do
+while getopts ":cd:r:e:" opt; do
   case $opt in
     c) CLEAN_FLAG=true ;;
-    e) ENV_FILE=$OPTARG ;;
-    \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
-    :) echo "Option -$OPTARG requires an argument." >&2; exit 1 ;;
+    d) LOCAL_DB_NAME=$OPTARG ;;
+    e) EXCLUDE_TABLES=$OPTARG ;;
+    \?) echo "Error: Invalid option: -$OPTARG" >&2; exit 1 ;;
+    :) echo "Error: Option -$OPTARG requires an argument." >&2; exit 1 ;;
   esac
 done
 
-# Shift command line arguments to skip processed options
-shift $((OPTIND-1))
-
-# Load environment variables from file
-if [ -f "$ENV_FILE" ]; then
-  source "$ENV_FILE"
-else
-  echo "Error: Environment file not found at $ENV_FILE."
-  exit 1
-fi
-
-TMP_FILE=$HOME"/db-backup/psc-backup.backup"
-ENCODED_PWD=$(echo "$REMOTE_DB_PWD" | sed 's/&/%26/g; s/#/%23/g; s/\^/%5E/g')
-REMOTE_DB="postgres://postgres:"$ENCODED_PWD"@"$SERVER_IP":5432/psc-production"
-
-run_pg_dump_remotely(){
-    echo "Running dump process remotely"
-    OUTPUT_FILE="psc-backup.backup"
-    BCKUP_DIR="/home/web/db-backup"
-    OUTPUT_PATH=$BCKUP_DIR"/"$OUTPUT_FILE
-    echo "Dumping database"
-    COMMAND='pg_dump '$REMOTE_DB' --exclude-table-data daily_user_item_sales --no-acl --no-owner | pv -s $(pg_dump '$REMOTE_DB' --schema-only -F c | wc -c) > '$OUTPUT_PATH
-    ssh 'web@psql-vps' $COMMAND
-    echo "Compressing dump file"
-    ssh 'web@psql-vps' 'cd '$BCKUP_DIR' && tar -czvf '$OUTPUT_FILE'.tar.gz '$OUTPUT_FILE
-    echo "Fetching dump file"
-    rsync -r -v --progress -e ssh web@psql-vps:$OUTPUT_PATH'.tar.gz' $TMP_FILE'.tar.gz'
-    echo "Extracting dump file"
-    tar -xzvf $TMP_FILE'.tar.gz' -C $HOME"/db-backup"
-}
-
-# Check if the dump file exists and is older than 2 days
-if [ -e "$TMP_FILE" ]; then
-  FILE_AGE=$(($(date +%s) - $(date -r "$TMP_FILE" +%s)))
-  MAX_AGE=$((2 * 24 * 60 * 60))  # 2 days in seconds
-
-  # Run pgpv_dump only if the file is older than 2 days or --clean flag is provided
-  if [ "$CLEAN_FLAG" = true ] || [ "$FILE_AGE" -gt "$MAX_AGE" ]; then
-    echo "Dump file exists and is older than 2 days or --clean flag is provided. Running pgpv_dump..."
-
-    run_pg_dump_remotely
-    # pgpv_dump "$REMOTE_DB" "$TMP_FILE"
-    if [ $? -ne 0 ]; then
-      echo "Error: Failed to dump remote database."
-      exit 1
-    fi
-  else
-    echo "Dump file is not older than 2 days, and --clean flag is not provided. Skipping pgpv_dump."
-  fi
-else
-  # Run pgpv_dump if the file does not exist
-  echo "Dump file does not exist. Running pgpv_dump..."
-  run_pg_dump_remotely
-  # pgpv_dump "$REMOTE_DB" "$TMP_FILE"
-  if [ $? -ne 0 ]; then
-    echo "Error: Failed to dump remote database."
+# Validate required parameters
+if [ -z "$LOCAL_DB_NAME" ]; then
+    echo "Error: Local database name (-d) is required"
     exit 1
-  fi
 fi
 
-# Drop local database if it exists
-echo "Dropping local database if it exists..."
-psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$LOCAL_DB_NAME' AND leader_pid IS NULL;"
-psql postgres -c 'DROP DATABASE IF EXISTS "'$LOCAL_DB_NAME'";'
-
-# Create a new local database
-echo "Creating local database..."
-psql postgres -c 'CREATE DATABASE "'$LOCAL_DB_NAME'";'
-
-# Restore dumped data to the local database with pv for progress tracking
-echo "Restoring data to local database..."
-pv "$TMP_FILE" | psql -q "$LOCAL_DB" > /dev/null
-if [ $? -ne 0 ]; then
-  echo "Error: Failed to restore data to local database."
-  exit 1
+if [ -z "$REMOTE_DB_NAME" ]; then
+    echo "Error: Remote database name (-r) is required"
+    exit 1
 fi
 
-# Clean up: remove the dump file
-echo "Cleaning up..."
+echo "Rebuilding database from remote..."
+remote-db-rebuild -d "$LOCAL_DB_NAME" -r "$REMOTE_DB_NAME" ${EXCLUDE_TABLES:+-e "$EXCLUDE_TABLES"}
 
-echo "Database migration completed successfully!"
-
-echo "Edit data for dev environment"
+echo "Updating data for dev environment..."
 USR_PWD="pbkdf2:sha256:600000\$BwuRaYQwBbDICJob\$b34aa7c0f7c0b8520c66344756c3d114cec60d0daa4dc458c2a70b228cbeb518"
-psql $LOCAL_DB_NAME -c "UPDATE site_users SET hash='"$USR_PWD"';"
+psql "$LOCAL_DB_NAME" -c "UPDATE site_users SET hash='$USR_PWD';"
 
 echo "Database ready for use"

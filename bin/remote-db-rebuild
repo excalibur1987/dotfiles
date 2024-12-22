@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+# Set default environment file path
+DEFAULT_ENV_FILE=~/envs/.psc.env
+ENV_FILE=$DEFAULT_ENV_FILE
+SERVER_IP=$(getent hosts psql-vps | awk '{ print $1 }')
+
+# Add this near the top of the script, after setting ENV_FILE
+if [ -f "$ENV_FILE" ]; then
+    source "$ENV_FILE"
+else
+    die "Environment file not found: $ENV_FILE"
+fi
+
+# Validate required environment variables
+[[ -z "${REMOTE_DB_PWD-}" ]] && die "REMOTE_DB_PWD environment variable is not set"
+[[ -z "${REMOTE_DB_USER-}" ]] && die "REMOTE_DB_USER environment variable is not set"
+
+usage() {
+  cat <<EOF
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-c] [-d db_name] [-r remote_db] [-e exclude_tables]
+
+Script to rebuild local database from remote PostgreSQL server.
+
+Available options:
+-h, --help              Print this help and exit
+-c, --clean            Force new dump regardless of existing backup age
+-d, --database         Local database name to create/rebuild
+-r, --remote           Remote database name to dump
+-e, --exclude          Tables to exclude from dump (comma-separated)
+
+This script performs the following steps:
+1. Dumps remote database (if backup is older than 2 days or --clean is used)
+2. Drops existing local database if it exists
+3. Creates new local database
+4. Restores dump to local database
+EOF
+  exit
+}
+
+cleanup() {
+  trap - SIGINT SIGTERM ERR EXIT
+  tput cnorm # enable cursor
+}
+
+setup_colors() {
+  if [[ -t 2 ]] && [[ -z "${NO_COLOR-}" ]] && [[ "${TERM-}" != "dumb" ]]; then
+    NOFORMAT='\033[0m' 
+    GRAY='\033[0;90m' 
+    RED='\033[0;31m' 
+    GREEN='\033[0;32m' 
+    BLUE='\033[0;34m'
+  else
+    NOFORMAT='' GRAY='' RED='' GREEN='' BLUE=''
+  fi
+}
+
+msg() {
+  echo >&2 -e "${1-}"
+}
+
+info() {
+  msg "${BLUE}[INFO]${NOFORMAT} ${1-}"
+}
+
+error() {
+  msg "${RED}[ERROR]${NOFORMAT} ${1-}"
+}
+
+success() {
+  msg "${GREEN}[SUCCESS]${NOFORMAT} ${1-}"
+}
+
+die() {
+  error "$1"
+  exit "${2-1}"
+}
+
+parse_params() {
+  CLEAN_FLAG=false
+  LOCAL_DB_NAME=""
+  REMOTE_DB_NAME=""
+  EXCLUDE_TABLES=""
+
+  while :; do
+    case "${1-}" in
+    -h | --help) usage ;;
+    -c | --clean) CLEAN_FLAG=true ;;
+    -d | --database)
+      LOCAL_DB_NAME="${2-}"
+      shift ;;
+    -r | --remote)
+      REMOTE_DB_NAME="${2-}"
+      shift ;;
+    -e | --exclude)
+      EXCLUDE_TABLES="${2-}"
+      shift ;;
+    -?*) die "Unknown option: $1" ;;
+    *) break ;;
+    esac
+    shift
+  done
+
+  [[ -z "$LOCAL_DB_NAME" ]] && die "Missing required parameter: -d/--database"
+  [[ -z "$REMOTE_DB_NAME" ]] && die "Missing required parameter: -r/--remote"
+
+  return 0
+}
+
+run_pg_dump_remotely(){
+    info "Running dump process remotely"
+    OUTPUT_FILE=$REMOTE_DB_NAME".backup"
+    BCKUP_DIR="/home/web/db-backup"
+    OUTPUT_PATH=$BCKUP_DIR"/"$OUTPUT_FILE
+    
+    info "Dumping database"
+    if [ -n "$EXCLUDE_TABLES" ]; then
+        COMMAND='pg_dump '$REMOTE_DB' --exclude-table-data '$EXCLUDE_TABLES' --no-acl --no-owner | pv -s $(pg_dump '$REMOTE_DB' --schema-only -F c | wc -c) > '$OUTPUT_PATH
+    else
+        COMMAND='pg_dump '$REMOTE_DB' --no-acl --no-owner | pv -s $(pg_dump '$REMOTE_DB' --schema-only -F c | wc -c) > '$OUTPUT_PATH
+    fi
+    
+    ssh 'web@psql-vps' $COMMAND || die "Failed to dump remote database"
+    info "Compressing dump file"
+    ssh 'web@psql-vps' 'cd '$BCKUP_DIR' && tar -czvf '$OUTPUT_FILE'.tar.gz '$OUTPUT_FILE
+    info "Fetching dump file"
+    rsync -r -v --progress -e ssh web@psql-vps:$OUTPUT_PATH'.tar.gz' $TMP_FILE'.tar.gz'
+    info "Extracting dump file"
+    tar -xzvf $TMP_FILE'.tar.gz' -C $HOME"/db-backup"
+}
+
+# Main script execution
+parse_params "$@"
+setup_colors
+
+ENCODED_PWD=$(echo "$REMOTE_DB_PWD" | sed 's/&/%26/g; s/#/%23/g; s/\^/%5E/g')
+REMOTE_DB="postgres://"$REMOTE_DB_USER":"$ENCODED_PWD"@"$SERVER_IP":5432/"$REMOTE_DB_NAME
+TMP_FILE=$HOME"/db-backup/"$REMOTE_DB_NAME".backup"
+
+# Check if dump is needed
+if [ -e "$TMP_FILE" ]; then
+  FILE_AGE=$(($(date +%s) - $(date -r "$TMP_FILE" +%s)))
+  MAX_AGE=$((2 * 24 * 60 * 60))  # 2 days in seconds
+
+  if [ "$CLEAN_FLAG" = true ] || [ "$FILE_AGE" -gt "$MAX_AGE" ]; then
+    info "Dump file exists but needs refresh. Running new dump..."
+    run_pg_dump_remotely
+  else
+    info "Using existing dump file (less than 2 days old)"
+  fi
+else
+  info "No existing dump file found. Creating new dump..."
+  run_pg_dump_remotely
+fi
+
+info "Dropping local database if exists..."
+psql postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$LOCAL_DB_NAME' AND leader_pid IS NULL;"
+psql postgres -c 'DROP DATABASE IF EXISTS "'$LOCAL_DB_NAME'";'
+
+info "Creating local database..."
+psql postgres -c 'CREATE DATABASE "'$LOCAL_DB_NAME'";'
+
+info "Restoring data to local database..."
+pv "$TMP_FILE" | psql -q "$LOCAL_DB_NAME" > /dev/null || die "Failed to restore data to local database"
+
+success "Database migration completed successfully!"
+
