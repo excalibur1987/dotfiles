@@ -48,7 +48,14 @@ OUTPUT_FILE="$OUTPUT_DIR/$BASE_FILE"
 sqlcmd -S $SERVER -d $DATABASE -U $DB_USER -P $DB_PWD -Q "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$TABLENAME' ORDER BY ORDINAL_POSITION" -h -1 | sed 's/[[:space:]]*$//' | sed '/^[[:alpha:]]/!d' > "$OUTPUT_FILE.tmp"
 
 # First transform each column name with CAST, then concatenate
-awk '{print "CAST(" $0 " AS NVARCHAR(MAX)) AS " $0}' "$OUTPUT_FILE.tmp" | paste -d"," -s > "$OUTPUT_FILE.header.sql"
+PREFIX="CAST("
+SUFFIX=" AS NVARCHAR(MAX)) AS "
+columns=()
+while IFS= read -r column; do
+    columns+=("$PREFIX$column$SUFFIX$column")
+done < "$OUTPUT_FILE.tmp"
+(IFS=,; echo "${columns[*]}") > "$OUTPUT_FILE.header.sql"
+
 
 # Original column names concatenated with pipe for the header
 paste -d"$DELIMITER" -s "$OUTPUT_FILE.tmp" >"$OUTPUT_FILE.header.csv"
@@ -63,7 +70,7 @@ rm "$OUTPUT_FILE.header.sql"
 # Export data using the query file
 bcp "$(cat "$OUTPUT_DIR/query.$BASE_FILE.sql")" \
 queryout "$OUTPUT_FILE.data.csv" -S $SERVER -d $DATABASE -U $DB_USER -P $DB_PWD \
--c -t "$DELIMITER" -r "\n" -C 65001 -w -e "$OUTPUT_FILE.error"
+-c -t "$DELIMITER" -r "\n" -w -e "$OUTPUT_FILE.error"
 
 # Cleanup temp files
 rm "$OUTPUT_DIR/query.$BASE_FILE.sql"
