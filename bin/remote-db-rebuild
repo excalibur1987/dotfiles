@@ -111,24 +111,36 @@ parse_params() {
 
 run_pg_dump_remotely(){
     info "Running dump process remotely"
+    
+    # Calculate total size of all tables that will be dumped
+    COUNT_COMMAND=$(psql "$REMOTE_DB" -t -c "
+        SELECT SUM(pg_relation_size(quote_ident(schemaname) || '.' || quote_ident(tablename)))
+        FROM pg_tables 
+        WHERE schemaname = 'public'
+        $([ -n "$EXCLUDE_TABLES" ] && echo "AND tablename NOT IN ('$(echo $EXCLUDE_TABLES | sed "s/,/','/")')")
+    ")
+
     OUTPUT_FILE=$REMOTE_DB_NAME".backup"
     BCKUP_DIR="/home/web/db-backup"
     OUTPUT_PATH=$BCKUP_DIR"/"$OUTPUT_FILE
     
     info "Dumping database"
     if [ -n "$EXCLUDE_TABLES" ]; then
-        COMMAND='pg_dump '$REMOTE_DB' --exclude-table-data '$EXCLUDE_TABLES' --no-acl --no-owner | pv -s $(pg_dump '$REMOTE_DB' --schema-only -F c | wc -c) > '$OUTPUT_PATH
+        COMMAND='pg_dump '$REMOTE_DB' --exclude-table-data '$EXCLUDE_TABLES' --no-acl --no-owner | pv -f -s '$COUNT_COMMAND' > '$OUTPUT_PATH
     else
-        COMMAND='pg_dump '$REMOTE_DB' --no-acl --no-owner | pv -s $(pg_dump '$REMOTE_DB' --schema-only -F c | wc -c) > '$OUTPUT_PATH
+        COMMAND='pg_dump '$REMOTE_DB' --no-acl --no-owner | pv -f -s '$COUNT_COMMAND' > '$OUTPUT_PATH
     fi
     
     ssh 'web@psql-vps' $COMMAND || die "Failed to dump remote database"
     info "Compressing dump file"
-    ssh 'web@psql-vps' 'cd '$BCKUP_DIR' && tar -czvf '$OUTPUT_FILE'.tar.gz '$OUTPUT_FILE
+    # Show compression progress using pv
+    ssh 'web@psql-vps' "cd $BCKUP_DIR && pv -f $OUTPUT_FILE | gzip > $OUTPUT_FILE.gz"
+    
     info "Fetching dump file"
-    rsync -r -v --progress -e ssh web@psql-vps:$OUTPUT_PATH'.tar.gz' $TMP_FILE'.tar.gz'
+    rsync -r -v --progress -e ssh "web@psql-vps:$OUTPUT_PATH.gz" "$TMP_FILE.gz"
+    
     info "Extracting dump file"
-    tar -xzvf $TMP_FILE'.tar.gz' -C $HOME"/db-backup"
+    gunzip -f "$TMP_FILE.gz"
 }
 
 # Main script execution
