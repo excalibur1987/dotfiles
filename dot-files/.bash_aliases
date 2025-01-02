@@ -23,8 +23,6 @@ alias l='ls -CF'
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-alias localstackt="docker run --rm -it -d -p 4566:4566 -p 4571:4571 localstack/localstack -e DATA_DIR=/tmp/localstack/data  \
-  -v $HOME/.docker/containers/s3:/tmp/localstack"
 
 alias pnpx="pnpm dlx"
 alias pi="pnpm i --shamefully-hoist"
