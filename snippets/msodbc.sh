@@ -15,3 +15,5 @@ sudo curl "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.
 
 sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17
 sudo apt-get install -y mssql-tools unixodbc unixodbc-dev
+
+export PATH="$PATH:/opt/mssql-tools/bin"
