@@ -36,3 +36,4 @@ alias llg="s -alF --block-size=GB"
 
 alias diff="git --no-pager diff --cached"
 alias diff-save="git diff --cached > staged_changes.diff"
+

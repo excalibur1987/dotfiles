@@ -31,3 +31,9 @@ unixodbc-dev
 zlib1g-dev
 zsh
 jq
+python3-dev
+libyaml-dev
+software-properties-common
+python3-pip
+openssh-server
+pv
