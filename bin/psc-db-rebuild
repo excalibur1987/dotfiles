@@ -2,17 +2,6 @@
 
 set -Eeuo pipefail
 
-# Set default environment file path
-DEFAULT_ENV_FILE=~/envs/.psc.env
-ENV_FILE=$DEFAULT_ENV_FILE
-
-# Load environment variables
-if [ -f "$ENV_FILE" ]; then
-    source "$ENV_FILE"
-else
-    echo "Error: Environment file not found: $ENV_FILE"
-    exit 1
-fi
 
 SERVER_IP=$(getent hosts psql-vps | awk '{ print $1 }')
 
