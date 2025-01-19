@@ -21,7 +21,7 @@ check_localstack() {
 
 # Start LocalStack
 log_message "Starting LocalStack..."
-/home/omar/.local/bin/localstack start -d
+localstack start -d
 
 # Wait for LocalStack to be ready
 if ! check_localstack; then
