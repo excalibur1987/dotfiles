@@ -119,3 +119,11 @@ source $ZSH/oh-my-zsh.sh
 [ -s "$HOME/.local_vars" ] && \. "$HOME/.local_vars"
 
 [ -z "$(ps -ef | grep cron | grep -v grep)" ] && sudo /etc/init.d/cron start &> /dev/null
+
+# pnpm
+export PNPM_HOME="/home/omar/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
