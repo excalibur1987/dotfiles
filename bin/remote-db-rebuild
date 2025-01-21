@@ -6,6 +6,7 @@ set -Eeuo pipefail
 DEFAULT_ENV_FILE=~/envs/.psc.env
 ENV_FILE=$DEFAULT_ENV_FILE
 SERVER_IP=$(getent hosts psql-vps | awk '{ print $1 }')
+FORCE_LOCAL=false
 
 # Add this near the top of the script, after setting ENV_FILE
 if [ -f "$ENV_FILE" ]; then
@@ -30,6 +31,7 @@ Available options:
 -d, --database         Local database name to create/rebuild
 -r, --remote           Remote database name to dump
 -e, --exclude          Tables to exclude from dump (comma-separated)
+-l, --local            Force local database rebuild from local dump
 
 This script performs the following steps:
 1. Dumps remote database (if backup is older than 2 days or --clean is used)
@@ -96,7 +98,9 @@ parse_params() {
       shift ;;
     -e | --exclude)
       EXCLUDE_TABLES="${2-}"
-      shift ;;
+      shift ;;  
+    -l | --local)
+      FORCE_LOCAL=true ;;
     -?*) die "Unknown option: $1" ;;
     *) break ;;
     esac
@@ -156,11 +160,15 @@ if [ -e "$TMP_FILE" ]; then
   FILE_AGE=$(($(date +%s) - $(date -r "$TMP_FILE" +%s)))
   MAX_AGE=$((2 * 24 * 60 * 60))  # 2 days in seconds
 
-  if [ "$CLEAN_FLAG" = true ] || [ "$FILE_AGE" -gt "$MAX_AGE" ]; then
-    info "Dump file exists but needs refresh. Running new dump..."
-    run_pg_dump_remotely
+  if [ "$FORCE_LOCAL" = false ]; then
+    if [ "$CLEAN_FLAG" = true ] || [ "$FILE_AGE" -gt "$MAX_AGE" ]; then
+      info "Dump file exists but needs refresh. Running new dump..."
+      run_pg_dump_remotely
+    else
+      info "Using existing dump file (less than 2 days old)"
+    fi
   else
-    info "Using existing dump file (less than 2 days old)"
+    info "Using local dump file"
   fi
 else
   info "No existing dump file found. Creating new dump..."

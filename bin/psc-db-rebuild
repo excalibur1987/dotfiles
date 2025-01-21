@@ -10,13 +10,15 @@ CLEAN_FLAG=false
 LOCAL_DB_NAME="psc-prod"
 REMOTE_DB_NAME="psc-production"
 EXCLUDE_TABLES="daily_user_item_sales"
+FORCE_LOCAL=false
 
 # Process command line options
-while getopts ":cd:r:e:" opt; do
+while getopts ":cd:r:e:l" opt; do
   case $opt in
     c) CLEAN_FLAG=true ;;
     d) LOCAL_DB_NAME=$OPTARG ;;
     e) EXCLUDE_TABLES=$OPTARG ;;
+    l) FORCE_LOCAL=true ;;
     \?) echo "Error: Invalid option: -$OPTARG" >&2; exit 1 ;;
     :) echo "Error: Option -$OPTARG requires an argument." >&2; exit 1 ;;
   esac
@@ -34,7 +36,7 @@ if [ -z "$REMOTE_DB_NAME" ]; then
 fi
 
 echo "Rebuilding database from remote..."
-remote-db-rebuild -d "$LOCAL_DB_NAME" -r "$REMOTE_DB_NAME" ${EXCLUDE_TABLES:+-e "$EXCLUDE_TABLES"}
+remote-db-rebuild -d "$LOCAL_DB_NAME" -r "$REMOTE_DB_NAME" ${EXCLUDE_TABLES:+-e "$EXCLUDE_TABLES"} ${FORCE_LOCAL:+-l}
 
 echo "Updating data for dev environment..."
 USR_PWD="pbkdf2:sha256:600000\$BwuRaYQwBbDICJob\$b34aa7c0f7c0b8520c66344756c3d114cec60d0daa4dc458c2a70b228cbeb518"
