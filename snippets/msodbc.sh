@@ -1,19 +1,24 @@
-sudo apt remove unixodbc unixodbc-dev odbcinst odbcinst1debian2 libodbc1 msodbcsql17 mssql-tools
+if ! [[ "18.04 20.04 22.04 24.04" == *"$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)"* ]];
+then
+    echo "Ubuntu $(grep VERSION_ID /etc/os-release | cut -d '"' -f 2) is not currently supported.";
+    exit;
+fi
 
-find /var/cache -name \*.deb -exec rm {} +
+# Download the package to configure the Microsoft repo
+curl -sSL -O https://packages.microsoft.com/config/ubuntu/$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)/packages-microsoft-prod.deb
+# Install the package
+sudo dpkg -i packages-microsoft-prod.deb
+# Delete the file
+rm packages-microsoft-prod.deb
 
-sudo rm /etc/apt/sources.list.d/mssql-release.list
-sudo rm /etc/apt/sources.list.d/msprod.list
-sudo apt update
+# Install the driver
+sudo apt-get update
+sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+# optional: for bcp and sqlcmd
+sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
+echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.zshrc
+export PATH="$PATH:/opt/mssql-tools18/bin"
+# optional: for unixODBC development headers
+sudo apt-get install -y unixodbc-dev
 
-sudo apt install unixodbc unixodbc-dev odbcinst odbcinst1debian2 libodbc1
-
-sudo apt-mark hold odbcinst1debian2 odbc-postgresql python3-pyodbc libodbc1 unixodbc unixodbc-dev odbcinst odbcinst1debian2
-
-curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-sudo curl "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list" > /etc/apt/sources.list.d/mssql-release.list
-
-sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17
-sudo apt-get install -y mssql-tools unixodbc unixodbc-dev
-
-export PATH="$PATH:/opt/mssql-tools/bin"
