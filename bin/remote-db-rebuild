@@ -109,7 +109,6 @@ parse_params() {
 
   [[ -z "$LOCAL_DB_NAME" ]] && die "Missing required parameter: -d/--database"
   [[ -z "$REMOTE_DB_NAME" ]] && die "Missing required parameter: -r/--remote"
-
   return 0
 }
 
