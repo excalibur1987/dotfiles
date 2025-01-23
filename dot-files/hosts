@@ -2,3 +2,5 @@
 172.232.217.164 psc-vps
 127.0.0.1       dev.local
 127.0.0.1       *.dev.local
+127.0.0.1       *.localhost
+127.0.0.1       *.local
