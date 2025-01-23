@@ -36,4 +36,4 @@ libyaml-dev
 software-properties-common
 python3-pip
 openssh-server
-pv
+curl
