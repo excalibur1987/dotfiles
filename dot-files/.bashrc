@@ -72,6 +72,15 @@ xterm*|rxvt*)
     ;;
 esac
 
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -82,26 +91,3 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-
-[ -s "$HOME/.bash_aliases" ] && \. "$HOME/.bash_aliases"
-[ -s "$HOME/.env_vars" ] && \. "$HOME/.env_vars"
-
-
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-
-[ -s "$HOME/.cargo/env" ] && \. "$HOME/.cargo/env"
-[ -s "$HOME/.bun/_bun" ] && \. "$HOME/.bun/_bun"
-
-[ -s "$HOME/.local_vars" ] && \. "$HOME/.local_vars"
-
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
-
-[ -z "$(ps -ef | grep cron | grep -v grep)" ] && sudo /etc/init.d/cron start &> /dev/null
-export PATH="$PATH:/opt/mssql-tools18/bin"

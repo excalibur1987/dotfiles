@@ -1,40 +1,43 @@
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    alias dir='dir --color=auto'
-    alias vdir='vdir --color=auto'
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
+# pnpm
+export PNPM_HOME="/home/omar/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
 
-# colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+# custom scripts
+export PATH="$PATH:$HOME/dotfiles/bin"
 
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+# locale
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
 
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+# Cursor alias
+function cursor() {
+    /opt/cursor.appimage --no-sandbox "${@}" > /dev/null 2>&1 & disown
+}
 
-
+# pnpm aliases
 alias pnpx="pnpm dlx"
 alias pi="pnpm i --shamefully-hoist"
 
-alias python="python3"
+# upgrade aliases
 alias upgrade="sudo apt update&&sudo apt upgrade -y&&sudo apt autoremove -y"
 
-# more ls aliases
-alias llm="ls -alF --block-size=MB"
-alias llg="s -alF --block-size=GB"
-
+# git aliases
 alias diff="git --no-pager diff --cached"
 alias diff-save="git diff --cached > staged_changes.diff"
 
+# python aliases
+alias python="python3"
 alias activate="source ./.venv/bin/activate"
