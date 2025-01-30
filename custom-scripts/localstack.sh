@@ -22,7 +22,6 @@ StartLimitBurst=5
 Type=forking
 User=omar
 Group=omar
-Environment="PATH=/usr/local/bin:/usr/bin:/bin"
 
 # Create a script that will be executed by the service
 ExecStart=/usr/local/bin/localstack-startup.sh
