@@ -104,3 +104,4 @@ fi
 
 
 [ -z "$(ps -ef | grep cron | grep -v grep)" ] && sudo /etc/init.d/cron start &> /dev/null
+export PATH="$PATH:/opt/mssql-tools18/bin"

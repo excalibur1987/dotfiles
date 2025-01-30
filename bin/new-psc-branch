@@ -73,7 +73,5 @@ new_string=":5432/$DB_NAME"
 file_path="$DIR/$branch/.env"
 sed -i "s|$old_string|$new_string|g" "$file_path"
 
-code $DIR/$branch
-
-pnpm i --shamefully-hoist
-poetry install --no-root
+pnpm i --shamefully-hoist > /dev/null 2>&1
+poetry install --no-root && source .venv/bin/activate
