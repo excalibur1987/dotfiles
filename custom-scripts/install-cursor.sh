@@ -68,31 +68,6 @@ Type=Application
 Categories=Development;
 EOL
 
-    # Add alias to the appropriate RC file
-    echo "Adding cursor alias to $RC_FILE..."
-    if [ "$SHELL_NAME" = "fish" ]; then
-        # Fish shell uses a different syntax for functions
-        if ! grep -q "function cursor" "$RC_FILE"; then
-            echo "function cursor" >> "$RC_FILE"
-            echo "    /opt/cursor.appimage --no-sandbox \$argv > /dev/null 2>&1 & disown" >> "$RC_FILE"
-            echo "end" >> "$RC_FILE"
-        else
-            echo "Alias already exists in $RC_FILE."
-        fi
-    else
-        if ! grep -q "function cursor" "$RC_FILE"; then
-            cat >> "$RC_FILE" <<EOL
-
-# Cursor alias
-function cursor() {
-    /opt/cursor.appimage --no-sandbox "\${@}" > /dev/null 2>&1 & disown
-}
-EOL
-        else
-            echo "Alias already exists in $RC_FILE."
-        fi
-    fi
-
     # Inform the user to reload the shell
     echo "To apply changes, please restart your terminal or run the following command:"
     echo "    source $RC_FILE"
