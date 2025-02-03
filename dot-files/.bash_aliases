@@ -41,3 +41,11 @@ alias diff-save="git diff --cached > staged_changes.diff"
 # python aliases
 alias python="python3"
 alias activate="source ./.venv/bin/activate"
+
+
+
+export PATH="$HOME/.local/bin:$PATH"
+
+if [ -f "$HOME/.cargo/env" ]; then
+   . "$HOME/.cargo/env"
+fi
