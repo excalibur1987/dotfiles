@@ -47,3 +47,12 @@ echo $template | sudo tee $target_path
 sudo systemctl daemon-reload
 sudo systemctl enable $service_name
 sudo systemctl restart $service_name
+
+# Configure AWS CLI profile for LocalStack
+aws configure set aws_access_key_id "access_key" --profile localstack
+aws configure set aws_secret_access_key "secret_access_key" --profile localstack
+aws configure set region "us-east-1" --profile localstack
+aws configure set output "json" --profile localstack
+
+# Set custom endpoint for LocalStack
+aws configure set endpoint_url "http://localhost:4566" --profile localstack
